@@ -5,7 +5,8 @@ A unity script build for safely reducing the size of html code.
 """
 
 import re
-html_tag = re.compile(r'hello')
+
+
 
 def _split(content):
     inside = False
@@ -43,14 +44,21 @@ def _split(content):
 
     return True
 
+
 def _generate_tag_list(content):
-    pt_html_tag = re.compile(r'<([^/>]*)/?>([^<]*)?')    
+    pt_html_tag = re.compile(r'<\s*(/?)\s*([^>]*)>([^<]*)')
+    compressd = []
+    layers = []
     for _ in pt_html_tag.findall(content)[:20]:
+        
+        if _[0] != "/":
+            pass
+
+
         print _
 
-    # match = pattern.match(content)
-    # if match:
-
+def conpress():
+    pass
 
 
 # test
@@ -58,11 +66,15 @@ if __name__ == '__main__':
     with open("test.html") as f:
         content = f.read()
     
-    _generate_tag_list(content)
-    # import time
-    # start = time.time()
-    # content = Dom(content)
-    # content._split()
-    # end = time.time()
 
-    # print end - start
+    import time
+    start = time.time()
+    #_generate_tag_list(content)
+    end = time.time()
+
+    print end - start
+
+
+x = """meta name="viewport" content="width=device-width, in\"itial-scale=1" /"""
+pt_html_tag = re.compile(r'(\w+(=\"(?!")\")?)')
+print pt_html_tag.findall(x)
