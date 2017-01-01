@@ -4,66 +4,65 @@
 A unity script build for safely reducing the size of html code.
 """
 
-# situation table
-# 0: normal
-# 1: in a left labal
-# 2: in 
-_SITUATION_TABLE = {
-    "": {
+import re
+html_tag = re.compile(r'hello')
 
-    },
-    "":{
-
-    }
-}
-
-
-def _calc(c, situation):
-    decision = _SITUATION_TABLE.get(situation).get(c, True)
-    return (c if decision else ""), situation
-
-# 0 < 1 > 0
 def _split(content):
-    snaps = []
-    pos = 0
-    local = []
+    inside = False
+    snap = list()
+    tag_list = list()
 
     for c in content:
-        if pos == 0:
+        if inside:
+            snap.append(c)
+            if c == ">":
+                tag_list.append({
+                    "i": inside,
+                    "s": "".join(snap),
+                })
+
+                snap = list()
+                inside = False
+        else:
             if c == "<":
-                pos = 1
-                snaps.append("".join(local))
-                local = ["<"]
+                tag_list.append({
+                    "i": inside,
+                    "s": "".join(snap),
+                })
+                inside = True
+                snap = ["<"]
 
             else:
-                local.append(c)
+                snap.append(c)
 
-        elif pos == 1:
-            local.append(c)
-            if c == ">":
-                pos = 0                
-                snaps.append("".join(local))
-                local = []
+    if snap:
+        tag_list.append({
+            "i": inside,
+            "s": "".join(snap),
+        })
 
-    return snaps
+    return True
+
+def _generate_tag_list(content):
+    pt_html_tag = re.compile(r'<([^/>]*)/?>([^<]*)?')    
+    for _ in pt_html_tag.findall(content)[:20]:
+        print _
+
+    # match = pattern.match(content)
+    # if match:
 
 
-
-def compress(content):
-    pure = []
-    situation = 0
-
-    for c in content:
-        _, situation = _calc(c, situation)
-        pure.append(_)
-
-    return "".join(pure)
 
 # test
 if __name__ == '__main__':
     with open("test.html") as f:
         content = f.read()
+    
+    _generate_tag_list(content)
+    # import time
+    # start = time.time()
+    # content = Dom(content)
+    # content._split()
+    # end = time.time()
 
-    content = _split(content)
-
-    print content
+    # print end - start
