@@ -57,8 +57,6 @@ def _generate_tag_list(content):
 
         print _
 
-def conpress():
-    pass
 
 
 # test
@@ -75,6 +73,28 @@ if __name__ == '__main__':
     print end - start
 
 
-x = """meta name="viewport" content="width=device-width, in\"itial-scale=1" /"""
-pt_html_tag = re.compile(r'(\w+(=\"(?!")\")?)')
-print pt_html_tag.findall(x)
+x = r"""meta name="viewport" data="width=device-width" style="width: 1px;"
+
+ h='3
+f'
+class = "bandao conord non"
+content="width=device-\'width, in\"itial-scale=1" /ji keka data-togle x_in hehe"""
+
+
+
+
+non_attr = re.compile(r'([A-Za-z0-9-_]+)\s|\b([A-Za-z0-9-_]+)$')
+
+print "________"
+for _ in non_attr.findall(x):
+    print _
+
+print "\n\n"
+
+
+# des_attr = re.compile(r'([A-Za-z0-9-_]+=(["|\'])((?<=\\)\2|[^"])+\2)')
+# print "________"
+# for _ in des_attr.findall(x):
+#     print _[0]
+
+# print "\n\n"
