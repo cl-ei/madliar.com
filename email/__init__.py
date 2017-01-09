@@ -7,11 +7,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.image import MIMEImage
 from log import logging
 
-
-mail_host = 'smtp.caoliang.net'
-mail_user = 'i@caoliang.net'
-mail_pass = '000000'
-sender = 'i@caoliang.net'
+from etc.config import mail_host, mail_user, mail_pass, sender
 
 
 def send_text_email(receiver, title, content):

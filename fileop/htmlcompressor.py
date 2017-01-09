@@ -54,7 +54,6 @@ def _generate_tag_list(content):
         if _[0] != "/":
             pass
 
-
         print _
 
 
@@ -97,4 +96,3 @@ print "\n\n"
 # for _ in des_attr.findall(x):
 #     print _[0]
 
-# print "\n\n"
