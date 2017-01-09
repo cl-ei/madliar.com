@@ -7,7 +7,6 @@ A unity script build for safely reducing the size of html code.
 import re
 
 
-
 def _split(content):
     inside = False
     snap = list()
@@ -56,6 +55,7 @@ def _generate_tag_list(content):
 
         print _
 
+
 # test
 if __name__ == '__main__':
     with open("test.html") as f:
@@ -69,25 +69,22 @@ if __name__ == '__main__':
     print end - start
 
 
-x = r"""meta name="viewport" data="width=device-width" style="width: 1px;"
+    x = r"""meta name="viewport" data="width=device-width" style="width: 1px;"
 
- h='3
-f'
-class = "bandao conord non"
-content="width=device-\'width, in\"itial-scale=1" /ji keka data-togle x_in hehe"""
-
-
-non_attr = re.compile(r'([A-Za-z0-9-_]+)\s|\b([A-Za-z0-9-_]+)$')
-
-print "________"
-for _ in non_attr.findall(x):
-    print _
-
-print "\n\n"
+     h='3
+    f'
+    class = "bandao conord non"
+    content="width=device-\'width, in\"itial-scale=1" /ji keka data-togle x_in hehe"""
 
 
-# des_attr = re.compile(r'([A-Za-z0-9-_]+=(["|\'])((?<=\\)\2|[^"])+\2)')
-# print "________"
-# for _ in des_attr.findall(x):
-#     print _[0]
+    non_attr = re.compile(r'([A-Za-z0-9-_]+)\s|\b([A-Za-z0-9-_]+)$')
+
+    print "________"
+    for _ in non_attr.findall(x):
+        print _
+
+    des_attr = re.compile(r'([A-Za-z0-9-_]+=(["|\'])((?<=\\)\2|[^"])+\2)')
+    print "________"
+    for _ in des_attr.findall(x):
+        print _[0]
 
