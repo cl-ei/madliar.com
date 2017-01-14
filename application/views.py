@@ -2,7 +2,6 @@ from wsgiserver.middleware import HttpResponse
 
 
 def index(request):
-    request.POST.get("key")
 
     with open("application/templates/index.html") as f:
         content = f.read()
@@ -10,5 +9,11 @@ def index(request):
     return HttpResponse(content)
 
 
-def server():
-    pass
+def server(request):
+    path = "application/static/test.jpeg"
+
+    with open(path, "rb") as f:
+        content = f.read()
+
+    return HttpResponse(content, "image/jpeg")
+

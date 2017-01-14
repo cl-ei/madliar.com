@@ -2,7 +2,7 @@ import re
 
 from wsgiref.simple_server import make_server
 from application.urls import urls
-from wsgiserver.middleware import HttpResponse, Request
+from wsgiserver.middleware import HttpResponse, Request, HttpResponseServerError
 
 
 class Core(object):
@@ -35,18 +35,16 @@ class Core(object):
 
         try:
             response = view_func(Request(environ))
+
             if not isinstance(response, HttpResponse):
                 raise TypeError("View function returned a bad response!")
 
-            status = response.status
-            headers = response.headers
-
-            start_response(status, headers)
-            return [response.content]
-
         except Exception as e:
             print "Sever Error: %s" % e
+            response = HttpResponseServerError()
 
-            start_response('404 NOT FOUND', [('Content-Type', 'text/html')])
-            return '<h1>Not Found!</h1>'
+        status = response.status
+        headers = response.headers
 
+        start_response(status, headers)
+        return [response.content]
