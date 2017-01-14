@@ -2,6 +2,8 @@
 
 """
 A unity script build for safely reducing the size of html code.
+
+Not finished yet!
 """
 
 import re
