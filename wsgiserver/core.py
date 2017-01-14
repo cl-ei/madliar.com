@@ -2,7 +2,7 @@ import re
 
 from wsgiref.simple_server import make_server
 from application.urls import urls
-from wsgiserver.response import HttpResponse
+from wsgiserver.middleware import HttpResponse, Request
 
 
 class Core(object):
@@ -12,11 +12,8 @@ class Core(object):
 
     def start_server(self):
 
-        host = self.host
-        port = self.port
-
-        httpd = make_server(host, port, Core.response)
-        print "Serving at: %s:%s" % (host, port)
+        httpd = make_server(self.host, self.port, Core.response)
+        print "Serving at: %s:%s" % (self.host, self.port)
 
         try:
             httpd.serve_forever()
@@ -29,28 +26,27 @@ class Core(object):
     @staticmethod
     def response(environ, start_response):
         path = re.sub(r"/+$", r"/", environ["PATH_INFO"] + "/")
-        print "path: ", path
 
         view_func = None
         for url in urls:
             if re.match(url, path):
                 view_func = urls[url]
+                break
 
         try:
-            response = view_func(environ)
-            if isinstance(response, HttpResponse):
-                status = response.status
-                content = response.content
-            elif isinstance(response, str) and len(response):
-                status = "200 OK"
-                content = response
-            else:
+            response = view_func(Request(environ))
+            if not isinstance(response, HttpResponse):
                 raise TypeError("View function returned a bad response!")
 
-            start_response(status, [('Content-Type', 'text/html')])
-            return content
+            status = response.status
+            headers = response.headers
+
+            start_response(status, headers)
+            return [response.content]
+
         except Exception as e:
-            print e
+            print "Sever Error: %s" % e
+
             start_response('404 NOT FOUND', [('Content-Type', 'text/html')])
             return '<h1>Not Found!</h1>'
 

@@ -5,7 +5,7 @@ from wsgiserver.core import Core
 
 """
 Run this script to start a tiny web server
-based on uwsgi communicating protocol.
+based on wsgi communicating protocol.
 
 """
 
