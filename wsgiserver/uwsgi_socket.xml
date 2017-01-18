@@ -1,7 +1,0 @@
-<uwsgi>
-    <socket>:65500</socket>
-    <chdir>/home/wwwroot/webapp/</chdir>
-    <module>webapp.wsgi</module>
-    <processes>1</processes>
-    <daemonize>uwsgi.log</daemonize>
-</uwsgi>

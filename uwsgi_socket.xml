@@ -1,0 +1,7 @@
+<uwsgi>
+    <socket>:65501</socket>
+    <chdir>/home/wwwroot/cls.web/</chdir>
+    <module>wsgiserver.wsgi</module>
+    <processes>1</processes>
+    <daemonize>uwsgi.log</daemonize>
+</uwsgi>
