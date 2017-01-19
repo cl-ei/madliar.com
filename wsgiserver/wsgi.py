@@ -1,3 +1,3 @@
 from .core import Core
 
-application = Core.response
+application = Core()

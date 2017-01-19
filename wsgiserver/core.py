@@ -10,6 +10,31 @@ class Core(object):
         self.host = host
         self.port = port
 
+    def __call__(environ, start_response):
+        path = re.sub(r"/+$", r"/", environ["PATH_INFO"] + "/")
+
+        view_func = None
+        for url in urls:
+            if re.match(url, path):
+                view_func = urls[url]
+                break
+
+        try:
+            response = view_func(Request(environ))
+
+            if not isinstance(response, HttpResponse):
+                raise TypeError("View function returned a bad response!")
+
+        except Exception as e:
+            print "Sever Error: %s" % e
+            response = HttpResponseServerError()
+
+        status = response.status
+        headers = response.headers
+
+        start_response(status, headers)
+        return [response.content]
+
     def start_server(self):
 
         httpd = make_server(self.host, self.port, Core.response)
@@ -48,3 +73,5 @@ class Core(object):
 
         start_response(status, headers)
         return [response.content]
+
+
