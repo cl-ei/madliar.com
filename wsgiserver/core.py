@@ -7,6 +7,7 @@ from wsgiserver.middleware import HttpResponse, Request, HttpResponseServerError
 
 class Core(object):
     def __init__(self, host="", port=80):
+        super(Core, self).__init__()
         self.host = host
         self.port = port
 
@@ -75,3 +76,4 @@ class Core(object):
         return [response.content]
 
 
+        
