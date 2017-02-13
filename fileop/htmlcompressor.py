@@ -72,7 +72,6 @@ if __name__ == '__main__':
 
 
     x = r"""meta name="viewport" data="width=device-width" style="width: 1px;"
-
      h='3
     f'
     class = "bandao conord non"
