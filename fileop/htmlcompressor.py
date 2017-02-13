@@ -63,21 +63,8 @@ if __name__ == '__main__':
     with open("test.html") as f:
         content = f.read()
     
-    import time
-    start = time.time()
     _generate_tag_list(content)
-    end = time.time()
-
-    print end - start
-
-
-    x = r"""meta name="viewport" data="width=device-width" style="width: 1px;"
-     h='3
-    f'
-    class = "bandao conord non"
-    content="width=device-\'width, in\"itial-scale=1" /ji keka data-togle x_in hehe"""
-
-
+    x = content
     non_attr = re.compile(r'([A-Za-z0-9-_]+)\s|\b([A-Za-z0-9-_]+)$')
 
     print "________"
