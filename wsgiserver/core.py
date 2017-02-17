@@ -49,31 +49,4 @@ class Core(object):
 
         print "Service Stop."
 
-    @staticmethod
-    def response(environ, start_response):
-        path = re.sub(r"/+$", r"/", environ["PATH_INFO"] + "/")
-
-        view_func = None
-        for url in urls:
-            if re.match(url, path):
-                view_func = urls[url]
-                break
-
-        try:
-            response = view_func(Request(environ))
-
-            if not isinstance(response, HttpResponse):
-                raise TypeError("View function returned a bad response!")
-
-        except Exception as e:
-            print "Sever Error: %s" % e
-            response = HttpResponseServerError()
-
-        status = response.status
-        headers = response.headers
-
-        start_response(status, headers)
-        return [response.content]
-
-
         
