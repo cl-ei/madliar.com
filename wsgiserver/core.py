@@ -27,7 +27,9 @@ class Core(object):
                 raise TypeError("View function returned a bad response!")
 
         except Exception as e:
-            print "Sever Error: %s" % e
+            from StringIO import StringIO
+            stdout = StringIO()
+            print >>stdout, "Sever Error: %s" % e
             response = HttpResponseServerError()
 
         status = response.status
@@ -38,7 +40,7 @@ class Core(object):
 
     def start_server(self):
 
-        httpd = make_server(self.host, self.port, Core.response)
+        httpd = make_server(self.host, self.port, Core.get_application())
         print "Serving at: %s:%s" % (self.host, self.port)
 
         try:
@@ -49,4 +51,3 @@ class Core(object):
 
         print "Service Stop."
 
-        
