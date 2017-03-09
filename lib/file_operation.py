@@ -7,7 +7,7 @@ def search(path, f_type):
     """
     To find all files with certain file extension in a path.
     """
-    f_type = f_type.lower()
+    f_type = map(lambda x: x.lstrip(".").lower(), [f_type] if isinstance(f_type, str) else f_type)
 
     file_list = []
     for _ in os.listdir(path):
@@ -15,11 +15,11 @@ def search(path, f_type):
 
         if os.path.isfile(full_path):
             _, file_ext = os.path.splitext(full_path)
-            if file_ext.lstrip(".").lower() == f_type:
+            if file_ext.lstrip(".").lower() in f_type:
                 file_list.append(full_path)
 
         if os.path.isdir(full_path):
-            file_list += search(full_path, f_type)
+            file_list.extend(search(full_path, f_type))
 
     return file_list
 
