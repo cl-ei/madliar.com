@@ -1,13 +1,15 @@
 import os
 import sys
 
+from lib import command
+
 
 class ManagementUtility(object):
     """
-    Encapsulates the logic of the django-admin and manage.py utilities.
+    Encapsulates the logic of the command tools utilities.
 
-    A ManagementUtility has a number of commands, which can be manipulated
-    by editing the self.commands dictionary.
+    A ManagementUtility finds out the command in the lib.command.py file
+    and run it.
     """
     def __init__(self, argv=None):
         self.argv = argv or sys.argv[:]
@@ -42,7 +44,11 @@ class ManagementUtility(object):
             from .servers import wsgi_server
             wsgi_server(host, port).serve_forever()
 
-        # sys.stdout.write(subcommand)
+        else:
+            try:
+                return getattr(command, subcommand)(*self.argv[2:])
+            except AttributeError:
+                sys.stderr.write("Unknown command: '%s' \nType 'help' for usage." % subcommand)
 
 
 def execute_from_command_line(argv=None):
