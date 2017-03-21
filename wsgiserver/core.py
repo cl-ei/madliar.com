@@ -4,13 +4,31 @@ from application.urls import urls
 from wsgiserver.middleware import HttpResponse, Request, HttpResponseServerError
 
 
+class BaseResponse(object):
+    def __init__(self, *args, **kwargs):
+        self.status_code = 200
+        self.reason_phrase = "OK"
+        self.cookies = []
+        self._handler_class = None
+        self.headers = [("Server", "Madliar")]
+        self.__ = 0
+
+    @property
+    def content(self):
+        return "Hello world"
+
+    @content.setter
+    def content(self, value):
+        self.content = value
+
+
 class BaseHandler(object):
 
     def __init__(self):
         pass
 
     def get_response(self, request):
-        return request
+        return BaseResponse()
 
 
 class WSGIRequest(object):
@@ -92,21 +110,20 @@ class WSGIHandler(BaseHandler):
 
     def __call__(self, environ, start_response):
 
-        # signals.request_started.send(sender=self.__class__, environ=environ)
         request = self.request_class(environ)
         response = self.get_response(request)
 
         response._handler_class = self.__class__
 
         status = '%d %s' % (response.status_code, response.reason_phrase)
-        response_headers = [(str(k), str(v)) for k, v in response.items()]
-        for c in response.cookies.values():
-            response_headers.append((str('Set-Cookie'), str(c.output(header=''))))
+        response_headers = [(str(k), str(v)) for k, v in response.headers]
+        # for c in response.cookies.values():
+        #     response_headers.append((str('Set-Cookie'), str(c.output(header=''))))
         start_response(str(status), response_headers)
 
-        if getattr(response, 'file_to_stream', None) is not None and environ.get('wsgi.file_wrapper'):
-            response = environ['wsgi.file_wrapper'](response.file_to_stream)
-        return response
+        # if getattr(response, 'file_to_stream', None) is not None and environ.get('wsgi.file_wrapper'):
+        #     response = environ['wsgi.file_wrapper'](response.file_to_stream)
+        return response.content
 
 
 def get_application():
