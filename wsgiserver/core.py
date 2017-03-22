@@ -2,6 +2,7 @@ import re
 
 from application.urls import urls
 from wsgiserver.middleware import HttpResponse, Request, HttpResponseServerError
+from wsgiref.headers import Headers
 
 
 class BaseResponse(object):
@@ -10,8 +11,17 @@ class BaseResponse(object):
         self.reason_phrase = "OK"
         self.cookies = []
         self._handler_class = None
-        self.headers = [("Server", "Madliar")]
         self.__ = 0
+        self._content = []
+        self.__set_default_headers()
+
+    def __set_default_headers(self):
+        self.headers = Headers([
+            ("Server", "Madliar"),
+            ("Access-Control-Allow-Origin", "*"),
+            ("X-Frame-Options", "SAMEORIGIN"),
+        ])
+        self.headers.add_header("Content-Type", "text/html", charset="utf-8")
 
     @property
     def content(self):
@@ -19,7 +29,11 @@ class BaseResponse(object):
 
     @content.setter
     def content(self, value):
-        self.content = value
+        self.content = [value]
+        self._content.append(value)
+
+    def __iter__(self):
+        return iter(self._content)
 
 
 class BaseHandler(object):
@@ -116,14 +130,14 @@ class WSGIHandler(BaseHandler):
         response._handler_class = self.__class__
 
         status = '%d %s' % (response.status_code, response.reason_phrase)
-        response_headers = [(str(k), str(v)) for k, v in response.headers]
+        response_headers = [(str(k), str(response.headers.get(k))) for k in response.headers.keys()]
         # for c in response.cookies.values():
         #     response_headers.append((str('Set-Cookie'), str(c.output(header=''))))
-        start_response(str(status), response_headers)
+        start_response(str(status), response.headers.items())
 
         # if getattr(response, 'file_to_stream', None) is not None and environ.get('wsgi.file_wrapper'):
         #     response = environ['wsgi.file_wrapper'](response.file_to_stream)
-        return response.content
+        return response
 
 
 def get_application():

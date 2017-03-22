@@ -30,7 +30,7 @@ class ManagementUtility(object):
         try:
             subcommand = self.argv[1]
         except IndexError:
-            subcommand = 'help'  # Display help if no arguments were given.
+            subcommand = 'runserver'  # Display help if no arguments were given.
 
         if subcommand == "runserver":
             try:
@@ -40,7 +40,7 @@ class ManagementUtility(object):
                 sys.stdout.write(error_msg)
                 host, port = "0.0.0.0", 80
 
-            sys.stdout.write("run as simple wsgi server on %s:%s." % (host, port))
+            sys.stdout.write("run as simple wsgi server on %s:%s.\n" % (host, port))
             from .servers import wsgi_server
             wsgi_server(host, port).serve_forever()
 
