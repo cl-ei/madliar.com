@@ -36,6 +36,43 @@ class BaseResponse(object):
         return iter(self._content)
 
 
+class StreamingHttpResponse(BaseResponse):
+
+    def _set_streaming_content(self, value):
+        return self, value
+
+
+class FileResponse(StreamingHttpResponse):
+    """
+    A streaming HTTP response class optimized for files.
+    """
+    block_size = 4096
+
+    def _set_streaming_content(self, value):
+        super(FileResponse, self)._set_streaming_content(value)
+
+
+class HttpResponseRedirectBase(HttpResponse):
+    allowed_schemes = ['http', 'https', 'ftp']
+
+    def __init__(self, redirect_to, *args, **kwargs):
+        super(HttpResponseRedirectBase, self).__init__(*args, **kwargs)
+        self['Location'] = iri_to_uri(redirect_to)
+        parsed = urlparse(force_text(redirect_to))
+        if parsed.scheme and parsed.scheme not in self.allowed_schemes:
+            raise DisallowedRedirect("Unsafe redirect to URL with protocol '%s'" % parsed.scheme)
+
+    url = property(lambda self: self['Location'])
+
+    def __repr__(self):
+        return '<%(cls)s status_code=%(status_code)d%(content_type)s, url="%(url)s">' % {
+            'cls': self.__class__.__name__,
+            'status_code': self.status_code,
+            'content_type': self._content_type_for_repr,
+            'url': self.url,
+        }
+
+
 class BaseHandler(object):
 
     def __init__(self):
@@ -130,13 +167,10 @@ class WSGIHandler(BaseHandler):
         response._handler_class = self.__class__
 
         status = '%d %s' % (response.status_code, response.reason_phrase)
-        response_headers = [(str(k), str(response.headers.get(k))) for k in response.headers.keys()]
-        # for c in response.cookies.values():
-        #     response_headers.append((str('Set-Cookie'), str(c.output(header=''))))
         start_response(str(status), response.headers.items())
 
-        # if getattr(response, 'file_to_stream', None) is not None and environ.get('wsgi.file_wrapper'):
-        #     response = environ['wsgi.file_wrapper'](response.file_to_stream)
+        if getattr(response, 'file_to_stream', None) is not None and environ.get('wsgi.file_wrapper'):
+            response = environ['wsgi.file_wrapper'](response.file_to_stream)
         return response
 
 
