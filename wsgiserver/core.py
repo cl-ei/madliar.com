@@ -1,6 +1,5 @@
 import re
 
-from application.urls import urls
 from wsgiref.headers import Headers
 
 
@@ -44,7 +43,9 @@ class BaseResponse(object):
 
 
 class HttpResponse(BaseResponse):
-    pass
+    def __init__(self, *args, **kwargs):
+        BaseResponse.__init__(self)
+        self.content = "Hell0o world!"
 
 
 class StreamingHttpResponse(BaseResponse):
@@ -90,7 +91,7 @@ class BaseHandler(object):
         pass
 
     def _get_response(self, request):
-        return request
+        return HttpResponse(32);
 
 
 class WSGIRequest(object):
