@@ -29,76 +29,70 @@ class RequestGET(object):
         return ""
 
 
-class Request(object):
-    def __init__(self, environ):
-        self.__environ = environ
-        self.server_protocol = environ["SERVER_PROTOCOL"]
-        self.method = environ["REQUEST_METHOD"]
-        self.content_length = environ["CONTENT_LENGTH"]
-        self.remote_addr = environ["REMOTE_ADDR"]
-        self.path = environ["PATH_INFO"]
-        self.content_type = environ["CONTENT_TYPE"]
-        self.__post_object = None
+# class Request(object):
+#     def __init__(self, environ):
+#         self.__environ = environ
+#         self.server_protocol = environ["SERVER_PROTOCOL"]
+#         self.method = environ["REQUEST_METHOD"]
+#         self.content_length = environ["CONTENT_LENGTH"]
+#         self.remote_addr = environ["REMOTE_ADDR"]
+#         self.path = environ["PATH_INFO"]
+#         self.content_type = environ["CONTENT_TYPE"]
+#         self.__post_object = None
+#
+#     @property
+#     def POST(self):
+#         if self.method != "POST":
+#             return None
+#
+#         if not self.__post_object:
+#             self.__post_object = RequestPOST(self.__environ)
+#
+#         return self.__post_object
+#
+#     @property
+#     def GET(self):
+#         return RequestGET(self.__environ) if self.method == "GET" else None
+#
+#     def show(self):
+#         print self.__dict__
 
-    @property
-    def POST(self):
-        if self.method != "POST":
-            return None
-
-        if not self.__post_object:
-            self.__post_object = RequestPOST(self.__environ)
-
-        return self.__post_object
-
-    @property
-    def GET(self):
-        return RequestGET(self.__environ) if self.method == "GET" else None
-
-    def show(self):
-        print self.__dict__
-
-
-DEFAULT_HEADERS = {
-    "Server": "cls.web/pre alpha 1.0",
-}
-
-
-class HttpResponse(object):
-    def __init__(self, content, mimetype="text/html"):
-        self.__content = content
-        self.__status = "200 OK"
-        self.__headers = DEFAULT_HEADERS
-        self.__headers.update({"Content-Type": mimetype})
-
-    @property
-    def status(self):
-        return self.__status
-
-    @property
-    def content(self):
-        return self.__content
-
-    @property
-    def headers(self):
-        return [(k, self.__headers[k]) for k in self.__headers]
+# class HttpResponse(object):
+#     def __init__(self, content, mimetype="text/html"):
+#         self.__content = content
+#         self.__status = "200 OK"
+#         self.__headers = DEFAULT_HEADERS
+#         self.__headers.update({"Content-Type": mimetype})
+#
+#     @property
+#     def status(self):
+#         return self.__status
+#
+#     @property
+#     def content(self):
+#         return self.__content
+#
+#     @property
+#     def headers(self):
+#         return [(k, self.__headers[k]) for k in self.__headers]
 
 
-class HttpResponseServerError(object):
-
-    def __init__(self, content=None):
-        self.__content = content or "<center><h1>500: Server Internal Error.</h1></center>"
-
-    @property
-    def status(self):
-        return "500 Internal Server Error"
-
-    @property
-    def content(self):
-        return self.__content
-
-    @property
-    def headers(self):
-        _headers = DEFAULT_HEADERS
-        _headers.update({"Content-Type": "text/html"})
-        return [(k, _headers[k]) for k in _headers]
+# class HttpResponseServerError(object):
+#
+#     def __init__(self, content=None):
+#         self.__content = content or "<center><h1>500: Server Internal Error.</h1></center>"
+#
+#     @property
+#     def status(self):
+#         return "500 Internal Server Error"
+#
+#     @property
+#     def content(self):
+#         return self.__content
+#
+#     @property
+#     def headers(self):
+#         _headers = DEFAULT_HEADERS
+#         _headers.update({"Content-Type": "text/html"})
+#         return [(k, _headers[k]) for k in _headers]
 

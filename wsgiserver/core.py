@@ -1,7 +1,6 @@
 import re
 
 from application.urls import urls
-from wsgiserver.middleware import HttpResponse, Request, HttpResponseServerError
 from wsgiref.headers import Headers
 
 
@@ -10,8 +9,8 @@ class BaseResponse(object):
         self.status_code = 200
         self.reason_phrase = "OK"
         self.cookies = []
+        self.charset = kwargs.get("charset", "utf-8")
         self._handler_class = None
-        self.__ = 0
         self._content = []
         self.__set_default_headers()
 
@@ -20,20 +19,32 @@ class BaseResponse(object):
             ("Server", "Madliar"),
             ("Access-Control-Allow-Origin", "*"),
             ("X-Frame-Options", "SAMEORIGIN"),
+            ("Content-Type", "text/html; charset=%s" % self.charset),
         ])
-        self.headers.add_header("Content-Type", "text/html", charset="utf-8")
 
     @property
     def content(self):
-        return "Hello world"
+        return b''.join(self._content)
 
     @content.setter
     def content(self, value):
-        self.content = [value]
-        self._content.append(value)
+        # Consume iterators upon assignment to allow repeated iteration.
+        if not hasattr(value, '__iter__'):
+            value = [value]
+
+        content = b''.join(map(
+            lambda x: bytes(x) if isinstance(x, bytes) else bytes(x.encode(self.charset)),
+            value
+        ))
+        self.headers.add_header("Content-length", str(len(content)))
+        self._content = [content]
 
     def __iter__(self):
         return iter(self._content)
+
+
+class HttpResponse(BaseResponse):
+    pass
 
 
 class StreamingHttpResponse(BaseResponse):
@@ -78,8 +89,8 @@ class BaseHandler(object):
     def __init__(self):
         pass
 
-    def get_response(self, request):
-        return BaseResponse()
+    def _get_response(self, request):
+        return request
 
 
 class WSGIRequest(object):
@@ -157,7 +168,7 @@ class WSGIHandler(BaseHandler):
 
     def __init__(self, *args, **kwargs):
         super(WSGIHandler, self).__init__(*args, **kwargs)
-        pass
+        self._middleware = None
 
     def __call__(self, environ, start_response):
 
@@ -172,6 +183,13 @@ class WSGIHandler(BaseHandler):
         if getattr(response, 'file_to_stream', None) is not None and environ.get('wsgi.file_wrapper'):
             response = environ['wsgi.file_wrapper'](response.file_to_stream)
         return response
+
+    def _load_middleware(self, request):
+        pass
+
+    def get_response(self, request):
+        self._load_middleware(request)
+        return self._get_response(request)
 
 
 def get_application():
