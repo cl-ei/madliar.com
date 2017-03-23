@@ -1,6 +1,6 @@
-from . import views
+from .web.views import hello_world
 
-urls = {
-    "^/$": views.index,
-    "^/server/": views.server,
+
+url = {
+   "web": hello_world,
 }

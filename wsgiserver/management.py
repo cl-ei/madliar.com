@@ -41,7 +41,7 @@ class ManagementUtility(object):
                 host, port = "0.0.0.0", 80
 
             sys.stdout.write("run as simple wsgi server on %s:%s.\n" % (host, port))
-            from .servers import wsgi_server
+            from .server import wsgi_server
             wsgi_server(host, port).serve_forever()
 
         else:

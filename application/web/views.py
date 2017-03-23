@@ -17,3 +17,9 @@
 #
 #     return HttpResponse(content, "image/jpeg")
 #
+
+from wsgiserver.middleware import HttpResponse
+
+
+def hello_world(request):
+    return HttpResponse("request")
