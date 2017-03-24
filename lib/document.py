@@ -1,7 +1,8 @@
 # -*- coding:utf-8 -*-
-
 import os
 import re
+import hashlib
+
 
 def search(path, f_type):
     """
@@ -24,12 +25,25 @@ def search(path, f_type):
     return file_list
 
 
-def _split(content):
-	"""
-	A unity script build for safely reducing the size of html code.
+def force_str(text, charset="utf-8"):
+    return {
+        str: lambda (t, c): t,
+        unicode: lambda (t, c): t.encode(c)
+    }.get(type(text))((text, charset))
 
-	Not finished yet!
-	"""
+
+def get_md5(text):
+    _ = hashlib.md5()
+    _.update(force_str(text))
+    return _.hexdigest()
+
+
+def _split(content):
+    """
+    A unity script build for safely reducing the size of html code.
+
+    Not finished yet!
+    """
     inside = False
     snap = list()
     tag_list = list()
@@ -68,31 +82,10 @@ def _split(content):
 
 def _generate_tag_list(content):
     pt_html_tag = re.compile(r'<\s*(/?)\s*([^>]*)>([^<]*)')
-    compressd = []
-    layers = []
-    for _ in pt_html_tag.findall(content)[:20]:
-        
-        if _[0] != "/":
-            pass
-
-        print _
+    return pt_html_tag
 
 
-# test
 if __name__ == '__main__':
-    with open("test.html") as f:
-        content = f.read()
-    
-    _generate_tag_list(content)
-    x = content
-    non_attr = re.compile(r'([A-Za-z0-9-_]+)\s|\b([A-Za-z0-9-_]+)$')
-
-    print "________"
-    for _ in non_attr.findall(x):
-        print _
-
-    des_attr = re.compile(r'([A-Za-z0-9-_]+=(["|\'])((?<=\\)\2|[^"])+\2)')
-    print "________"
-    for _ in des_attr.findall(x):
-        print _[0]
+    """Just for testing."""
+    pass
 
