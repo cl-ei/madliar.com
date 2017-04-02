@@ -62,8 +62,8 @@ class WSGIRequest(object):
 
 class BaseResponse(object):
     def __init__(self, *args, **kwargs):
-        self.status_code = 200
-        self.reason_phrase = "OK"
+        self.status_code = kwargs.get("status_code", 200)
+        self.reason_phrase = kwargs.get("reason_phrase", "OK")
         self.cookies = []
         self.charset = kwargs.get("charset", "utf-8")
         self._handler_class = None

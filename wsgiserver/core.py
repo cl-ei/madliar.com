@@ -34,14 +34,18 @@ class WSGIHandler(BaseHandler):
     def _load_middleware(self, request):
         pass
 
-    def route_distributing(self, request):
-        for url_, view_func in user_url_map.items():
-            print url_, view_func
-            m = re.match(url_, request.path_info)
+    @staticmethod
+    def route_distributing(request):
+        for url, view_func in user_url_map.items():
+            m = re.match(url, request.path_info)
             if m:
                 return view_func(request, *m.groups())
-
-        return HttpResponse("Test")
+        else:
+            return HttpResponse(
+                "<center><h3>404 Not Found!</h3></center>",
+                status_code=404,
+                reason_phrase="Not Found",
+            )
 
     def get_response(self, request):
         self._load_middleware(request)
