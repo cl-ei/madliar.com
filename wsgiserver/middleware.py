@@ -16,8 +16,7 @@ class WSGIRequest(object):
 
         self.script_url = environ.get('SCRIPT_URL', " ")
         self.environ = environ
-        self.path = '%s/%s' % (script_name.rstrip('/'),
-                               path_info.replace('/', '', 1))
+        self.path = '%s/%s' % (script_name.rstrip('/'), path_info.replace('/', '', 1))
 
         self.META = environ
         self.META['PATH_INFO'] = path_info
@@ -28,6 +27,9 @@ class WSGIRequest(object):
 
     def _get_scheme(self):
         return self.environ.get('wsgi.url_scheme')
+
+    def _load_post_and_files(self):
+        pass
 
     @property
     def GET(self):
