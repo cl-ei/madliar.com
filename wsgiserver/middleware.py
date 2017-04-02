@@ -1,5 +1,6 @@
 import cgi
 import json
+import re
 
 from cgi import escape
 from urlparse import parse_qs

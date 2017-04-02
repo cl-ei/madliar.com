@@ -2,7 +2,7 @@ import re
 
 from wsgiref.headers import Headers
 from .middleware import HttpResponse, WSGIRequest
-from application import urls
+from application.urls import url as user_url_map
 
 
 class BaseHandler(object):
@@ -35,7 +35,11 @@ class WSGIHandler(BaseHandler):
         pass
 
     def route_distributing(self, request):
-        print request.GET
+        for url_, view_func in user_url_map.items():
+            print url_, view_func
+            m = re.match(url_, request.path_info)
+            if m:
+                return view_func(request, *m.groups())
 
         return HttpResponse("Test")
 
