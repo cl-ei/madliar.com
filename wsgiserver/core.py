@@ -34,14 +34,13 @@ class WSGIHandler(BaseHandler):
     def _load_middleware(self, request):
         pass
 
-    def route_distributing(self, request, url_map=user_url_map.items()):
-        print request.content_type, request.content_params
-        for url, view_func in url_map:
+    def route_distributing(self, request, url_map=user_url_map):
+        for url, view_func in url_map.items():
             m = re.match(url, request.route_path)
             if m:
                 if isinstance(view_func, dict):
                     request.route_path = request.route_path[len(m.group()):] or "/"
-                    return self.route_distributing(request, url_map=view_func.items())
+                    return self.route_distributing(request, url_map=view_func)
                 else:
                     return view_func(request, *m.groups())
         else:
