@@ -1,7 +1,7 @@
 from .web import views as web_views
-
+from .web.urls import url as web_url
+from wsgiserver.middleware import route_include
 
 url = {
-    "^/web": web_views.hello_world,
-    "^/share/(\w+)/?$": web_views.arg_test_responset,
+    "^/web": route_include(web_url),
 }

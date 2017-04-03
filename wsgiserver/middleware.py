@@ -1,9 +1,4 @@
 import cgi
-import json
-import re
-
-from cgi import escape
-from urlparse import parse_qs
 from wsgiref.headers import Headers
 
 
@@ -18,6 +13,7 @@ class WSGIRequest(object):
         self.script_url = environ.get('SCRIPT_URL', " ")
         self.environ = environ
         self.path = '%s/%s' % (script_name.rstrip('/'), path_info.replace('/', '', 1))
+        self.__route_path = path_info
 
         self.META = environ
         self.META['PATH_INFO'] = path_info
@@ -31,6 +27,14 @@ class WSGIRequest(object):
 
     def _load_post_and_files(self):
         pass
+
+    @property
+    def route_path(self):
+        return self.__route_path
+
+    @route_path.setter
+    def route_path(self, path):
+        self.__route_path = path
 
     @property
     def GET(self):
@@ -142,3 +146,7 @@ class HttpResponseRedirectBase(HttpResponse):
             'content_type': self._content_type_for_repr,
             'url': self.url,
         }
+
+
+def route_include(url_map):
+    return url_map
