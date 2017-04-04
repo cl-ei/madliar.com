@@ -1,5 +1,13 @@
 import cgi
+import re
 from wsgiref.headers import Headers
+from wsgiserver.template import Template
+
+STATICS_FILE_MIME_TYPE = (
+    (("png", "jpg", "jpeg", "gif"), "image", None),
+    (("js", "woff"), "application", ("javascript", "x-font-woff")),
+    (("css", ), "text", None),
+)
 
 
 class WSGIRequest(object):
@@ -73,13 +81,16 @@ class BaseResponse(object):
         self._handler_class = None
         self._content = []
         self.__set_default_headers()
+        self.headers.add_header(
+            "Content-Type",
+            kwargs.get("content_type", "text/html; charset=%s" % self.charset)
+        )
 
     def __set_default_headers(self):
         self.headers = Headers([
             ("Server", "Madliar"),
             ("Access-Control-Allow-Origin", "*"),
             ("X-Frame-Options", "SAMEORIGIN"),
-            ("Content-Type", "text/html; charset=%s" % self.charset),
         ])
 
     @property
@@ -109,6 +120,14 @@ class HttpResponse(BaseResponse):
         content = kwargs.get("content", str(args[0]))
         if type(content) in (bytes, str):
             self.content = content
+
+
+class Http404Response(BaseResponse):
+    def __init__(self, *args, **kwargs):
+        BaseResponse.__init__(self, *args, **kwargs)
+        self.content = "<center><h3>404 Not Found!</h3></center>"
+        self.status_code = 404
+        self.reason_phrase = "Not Found"
 
 
 class StreamingHttpResponse(BaseResponse):
@@ -148,5 +167,41 @@ class HttpResponseRedirectBase(HttpResponse):
         }
 
 
+def static_files_response(request, static_path):
+    static_file_path = static_path + request.route_path
+    try:
+        with open(static_file_path, "rb") as f:
+            content = f.read()
+    except IOError:
+        return Http404Response()
+
+    try:
+        static_file_ext_name = re.match(r".*\.(.*)", static_file_path).groups()[0].lower()
+    except AttributeError:
+        return Http404Response()
+
+    for static_file_typedef in STATICS_FILE_MIME_TYPE:
+        ext_name_group, mime_type, mime_desc = static_file_typedef
+        if static_file_ext_name in ext_name_group:
+            content_type = "%s/%s" % (
+                mime_type,
+                mime_desc[ext_name_group.index(static_file_ext_name)] if mime_desc else static_file_ext_name
+            )
+            break
+    else:
+        content_type = None
+
+    return HttpResponse(content, content_type=content_type)
+
+
 def route_include(url_map):
     return url_map
+
+
+def render(template, context=None, request=None):
+    try:
+        with open(template) as f:
+            template_context = f.read()
+    except IOError:
+        template_context = "<center><h3>Template Does Not Existed!</h3></center>"
+    return HttpResponse(Template(template_context).render(context or {}))

@@ -1,7 +1,8 @@
 import re
 
 from wsgiref.headers import Headers
-from .middleware import HttpResponse, WSGIRequest
+from .middleware import HttpResponse, WSGIRequest, static_files_response, Http404Response
+from etc.config import *
 from application.urls import url as user_url_map
 
 
@@ -43,12 +44,14 @@ class WSGIHandler(BaseHandler):
                     return self.route_distributing(request, url_map=view_func)
                 else:
                     return view_func(request, *m.groups())
-        else:
-            return HttpResponse(
-                "<center><h3>404 Not Found!</h3></center>",
-                status_code=404,
-                reason_phrase="Not Found",
-            )
+        # Not hit
+        if DEBUG:
+            for url, static_path in STATICS_URL_MAP.items():
+                m = re.match(url, request.path_info)
+                if m:
+                    request.route_path = request.path_info[len(m.group()):] or "/"
+                    return static_files_response(request, static_path)
+        return Http404Response()
 
     def get_response(self, request):
         self._load_middleware(request)

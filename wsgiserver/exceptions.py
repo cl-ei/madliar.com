@@ -41,3 +41,10 @@ class TemplateSyntaxError(Exception):
     The exception used for syntax errors during parsing or rendering.
     """
     pass
+
+
+class HTTPResponseWriteError(Exception):
+    """
+    The exception used for syntax errors during parsing or rendering.
+    """
+    pass
