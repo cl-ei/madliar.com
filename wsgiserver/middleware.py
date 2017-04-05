@@ -87,7 +87,7 @@ class BaseResponse(object):
 
     def __set_default_headers(self):
         self.headers = Headers([
-            ("Server", "Madliar"),
+            ("Server", "MadLiar"),
             ("Access-Control-Allow-Origin", "*"),
             ("X-Frame-Options", "SAMEORIGIN"),
         ])

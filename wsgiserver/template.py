@@ -108,7 +108,8 @@ class Template:
 
     def _handle_variable(self, token):
         variable = token.strip('{} ')
-        self.buffered.append('str(__GLOBAL_VARIABLES.get("{}", ""))'.format(variable))
+        variable_name = re.match("(\w+)", variable).groups()[0]
+        self.buffered.append('str({}) if "{}" in __GLOBAL_VARIABLES else ""'.format(variable, variable_name))
 
     def _handle_comment(self, token):
         pass
