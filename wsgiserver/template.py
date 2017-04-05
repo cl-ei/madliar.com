@@ -106,7 +106,7 @@ class Template:
 
     def _handle_variable(self, token):
         variable = token.strip('{} ')
-        self.buffered.append('str({})'.format(variable))
+        self.buffered.append('str(globals().get("{}", ""))'.format(variable))
 
     def _handle_comment(self, token):
         pass
@@ -204,8 +204,6 @@ class Template:
     def render(self, context=None):
         namespace = {}
         namespace.update(self.default_context)
-        if context:
-            namespace.update(context)
-        exec(str(self.code_builder), namespace)
-        result = namespace[self.func_name]()
-        return result
+        namespace.update(context or {})
+        exec str(self.code_builder) in namespace
+        return namespace[self.func_name]()
