@@ -10,6 +10,9 @@
 <center>
 <h1>It workes !</h1>
   <p>{{ description }}</p>
+  {% for x in __GLOBAL_VARIABLES.get("a", dict()) %}
+  {{ x.3 }}
+  {% endif %}
 </center>
 
 <img src="/statics/test.jpeg"/>

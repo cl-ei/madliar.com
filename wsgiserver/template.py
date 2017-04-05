@@ -78,6 +78,7 @@ class Template:
 
         code_builder.add_line('def {}():'.format(self.func_name))
         code_builder.forward()
+        code_builder.add_line('__GLOBAL_VARIABLES = globals()')
         code_builder.add_line('{} = []'.format(self.result_var))
         self._parse_text()
 
@@ -107,7 +108,7 @@ class Template:
 
     def _handle_variable(self, token):
         variable = token.strip('{} ')
-        self.buffered.append('str(globals().get("{}", ""))'.format(variable))
+        self.buffered.append('str(__GLOBAL_VARIABLES.get("{}", ""))'.format(variable))
 
     def _handle_comment(self, token):
         pass
@@ -131,7 +132,7 @@ class Template:
                 self.code_builder.backward()
             self.code_builder.add_line('{}:'.format(tag))
             self.code_builder.forward()
-        elif tag_name in ('break',):
+        elif tag_name in ('break', ):
             self.code_builder.add_line(tag)
         elif tag_name in ('endif', 'endfor'):
             self.code_builder.backward()
