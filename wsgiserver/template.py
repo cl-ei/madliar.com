@@ -13,6 +13,8 @@ Sample code:
 import os
 import re
 
+from wsgiserver.middleware import HttpResponse
+
 __author__ = "mozillazg"
 
 
@@ -43,7 +45,6 @@ class CodeBuilder:
 
 
 class Template:
-
     def __init__(self, raw_text, indent=0, default_context=None,
                  func_name='__func_name', result_var='__result',
                  template_dir='', encoding='utf-8'):
@@ -207,3 +208,12 @@ class Template:
         namespace.update(context or {})
         exec str(self.code_builder) in namespace
         return namespace[self.func_name]()
+
+
+def render(template, context=None, request=None):
+    try:
+        with open(template) as f:
+            template_context = f.read()
+    except IOError:
+        template_context = "<center><h3>Template Does Not Existed!</h3></center>"
+    return HttpResponse(Template(template_context).render(context or {}))

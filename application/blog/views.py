@@ -1,4 +1,4 @@
-from wsgiserver.middleware import render
+from wsgiserver.template import render
 
 
 def home_page(request):

@@ -1,7 +1,6 @@
 import cgi
 import re
 from wsgiref.headers import Headers
-from wsgiserver.template import Template
 
 STATICS_FILE_MIME_TYPE = (
     (("png", "jpg", "jpeg", "gif"), "image", None),
@@ -196,12 +195,3 @@ def static_files_response(request, static_path):
 
 def route_include(url_map):
     return url_map
-
-
-def render(template, context=None, request=None):
-    try:
-        with open(template) as f:
-            template_context = f.read()
-    except IOError:
-        template_context = "<center><h3>Template Does Not Existed!</h3></center>"
-    return HttpResponse(Template(template_context).render(context or {}))
