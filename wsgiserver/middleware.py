@@ -9,6 +9,26 @@ STATICS_FILE_MIME_TYPE = (
 )
 
 
+class cached_property(object):
+    """
+    Decorator that converts a method with a single self argument into a
+    property cached on the instance.
+
+    Optional ``name`` argument allows you to make cached properties of other
+    methods. (e.g.  url = cached_property(get_absolute_url, name='url') )
+    """
+    def __init__(self, func, name=None):
+        self.func = func
+        self.__doc__ = getattr(func, '__doc__')
+        self.name = name or func.__name__
+
+    def __get__(self, instance, cls=None):
+        if instance is None:
+            return self
+        res = instance.__dict__[self.name] = self.func(instance)
+        return res
+
+
 class WSGIRequest(object):
     def __init__(self, environ):
         self._encoding = "utf-8"
@@ -43,11 +63,17 @@ class WSGIRequest(object):
     def route_path(self, path):
         self.__route_path = path
 
-    @property
+    @cached_property
     def GET(self):
         # The WSGI spec says 'QUERY_STRING' may be absent.
         raw_query_string = self.environ.get('QUERY_STRING', '')
-        return raw_query_string
+        pairs = re.compile('[&;]').split(raw_query_string)
+
+        query = dict()
+        for pair in pairs:
+            k, v = pair.split("=")
+            query[k] = v or None
+        return query
 
     def _get_post(self):
         if not hasattr(self, '_post'):
@@ -58,9 +84,7 @@ class WSGIRequest(object):
         self._post = post
 
     def COOKIES(self):
-        # raw_cookie = get_str_from_wsgi(self.environ, 'HTTP_COOKIE', '')
-        # return http.parse_cookie(raw_cookie)
-        return ""
+        return self.environ.get('HTTP_COOKIE', '')
 
     @property
     def FILES(self):
