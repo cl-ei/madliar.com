@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import cgi
 import re
 from wsgiref.headers import Headers
@@ -7,6 +8,8 @@ STATICS_FILE_MIME_TYPE = (
     (("js", "woff"), "application", ("javascript", "x-font-woff")),
     (("css", ), "text", None),
 )
+QUERY_STRING_PATTERN = re.compile(r"([^=]+)=(.*)")
+QUERY_STRING_SPLIT = re.compile('[&;]')
 
 
 class cached_property(object):
@@ -33,7 +36,7 @@ class WSGIRequest(object):
     def __init__(self, environ):
         self._encoding = "utf-8"
 
-        script_name = path_info = environ.get('SCRIPT_NAME', "")
+        script_name = environ.get('SCRIPT_NAME', "")
         path_info = environ.get('PATH_INFO', "/")
         self.path_info = path_info
 
@@ -52,9 +55,6 @@ class WSGIRequest(object):
     def _get_scheme(self):
         return self.environ.get('wsgi.url_scheme')
 
-    def _load_post_and_files(self):
-        pass
-
     @property
     def route_path(self):
         return self.__route_path
@@ -63,26 +63,40 @@ class WSGIRequest(object):
     def route_path(self, path):
         self.__route_path = path
 
-    @cached_property
-    def GET(self):
-        # The WSGI spec says 'QUERY_STRING' may be absent.
-        raw_query_string = self.environ.get('QUERY_STRING', '')
-        pairs = re.compile('[&;]').split(raw_query_string)
-
+    @staticmethod
+    def parse_query_string(raw_qs):
+        pairs = [p for p in QUERY_STRING_SPLIT.split(raw_qs) if p]
         query = dict()
         for pair in pairs:
-            k, v = pair.split("=")
-            query[k] = v or None
+            m = QUERY_STRING_PATTERN.match(pair)
+            if m:
+                query[m.group(1)] = m.group(2)
         return query
 
-    def _get_post(self):
-        if not hasattr(self, '_post'):
-            self._load_post_and_files()
-        return self._post
+    @cached_property
+    def GET(self):
+        """The WSGI spec says 'QUERY_STRING' may be absent."""
+        raw_query_string = self.environ.get('QUERY_STRING', '')
+        query = self.parse_query_string(raw_query_string)
+        return query
 
-    def _set_post(self, post):
-        self._post = post
+    @cached_property
+    def POST(self):
+        if self.method != "POST":
+            return dict()
+        try:
+            request_body_size = int(self.environ.get('CONTENT_LENGTH', 0))
+        except ValueError:
+            request_body_size = 0
 
+        if request_body_size > 1024 * 100:
+            raise ValueError("POST request body too long: %s Bytes." % request_body_size)
+
+        request_body = self.environ['wsgi.input'].read(request_body_size)
+        post_qs = self.parse_query_string(request_body)
+        return post_qs
+
+    @cached_property
     def COOKIES(self):
         return self.environ.get('HTTP_COOKIE', '')
 
@@ -91,8 +105,6 @@ class WSGIRequest(object):
         if not hasattr(self, '_files'):
             self._load_post_and_files()
         return self._files
-
-    POST = property(_get_post, _set_post)
 
 
 class BaseResponse(object):
@@ -215,7 +227,3 @@ def static_files_response(request, static_path):
         content_type = None
 
     return HttpResponse(content, content_type=content_type)
-
-
-def route_include(url_map):
-    return url_map
