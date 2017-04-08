@@ -1,7 +1,8 @@
 import re
 
 from wsgiref.headers import Headers
-from .middleware import HttpResponse, WSGIRequest, static_files_response, Http404Response
+from .http import static_files_response, Http404Response
+from .middleware import WSGIRequest
 from etc.config import *
 from application.urls import url as user_url_map
 

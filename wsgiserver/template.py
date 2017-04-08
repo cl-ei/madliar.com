@@ -13,7 +13,7 @@ Sample code:
 import os
 import re
 
-from wsgiserver.middleware import HttpResponse
+from wsgiserver.http import HttpResponse
 
 __author__ = "mozillazg"
 
