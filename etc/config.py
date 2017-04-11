@@ -10,5 +10,8 @@ DEBUG = True
 
 STATICS_URL_MAP = {
     "^/statics": "application/blog/static",
+    "^/static": "static",
 }
+
+POST_ARTICLE_PATH = ""
 

@@ -23,3 +23,8 @@ def analysis(*args, **kwargs):
             sys.stderr.write("line %s: %s\n" % (i, str(e)))
 
     return domain_rec
+
+
+def load_article(*args, **kwargs):
+    from application.blog.tools import generate_cached_article_json
+    return generate_cached_article_json(*args, **kwargs)
