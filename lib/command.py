@@ -26,5 +26,7 @@ def analysis(*args, **kwargs):
 
 
 def load_article(*args, **kwargs):
-    from application.blog.tools import generate_cached_article_json
+
+    from application.blog.utils import generate_cached_article_json
     return generate_cached_article_json(*args, **kwargs)
+
