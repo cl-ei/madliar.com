@@ -38,7 +38,7 @@ class ManagementUtility(object):
             except (IndexError, TypeError) as e:
                 error_msg = "An error happend: %s, use default configured.\n" % str(e)
                 sys.stdout.write(error_msg)
-                host, port = "0.0.0.0", 80
+                host, port = "0.0.0.0", 8080
 
             sys.stdout.write("run as simple wsgi server on %s:%s.\n" % (host, port))
             from .server import wsgi_server

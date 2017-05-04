@@ -36,7 +36,7 @@ class ArticleParser(object):
         m = re.match(r"^-{3,}([\s\S]*)", self.content)
         if m:
             content = m.groups()[0]
-            self.header, self.body = re.split(r"-{3,}\n", content, maxsplit=1)
+            self.header, self.body = re.split(r"-{3,}\r?\n", content, maxsplit=1)
 
     def __parse_header(self):
         for line in self.header.split("\n"):
@@ -62,7 +62,8 @@ class ArticleParser(object):
         if m:
             first_figure = m.groups()[0].strip("'\"")
         else:
-            first_figure = "/static/blog/img/preview_" + str(random.randint(0, 5)) + ".jpg"
+            figure_index = str(random.randint(0, 5))
+            first_figure = "/static/blog/img/preview_%s.jpg" % figure_index
         self.header_info["first_figure"] = first_figure
 
     @property
