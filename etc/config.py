@@ -1,24 +1,39 @@
-__all__ = (
-    "DEBUG",
-    "PROJECT_ROOT",
-    "POST_ARTICLE_PATH",
-    "PARSED_ARTICLE_JSON",
-    "STATICS_URL_MAP",
-)
+"""
+website config.
 
-# email config
-mail_host = 'smtp.caoliang.net'
-mail_user = 'i@caoliang.net'
-mail_pass = '000000'
-sender = 'i@caoliang.net'
+"""
 
-DEBUG = True
+import os
 
-PROJECT_ROOT = "./" if DEBUG else "/home/wwwroot/madliar"
-POST_ARTICLE_PATH = "template/_post/article"
-PARSED_ARTICLE_JSON = "static/blog/js/article"
 
-STATICS_URL_MAP = {
-    "^/statics": "application/blog/static",
-    "^/static": "static",
+EMAIL_CONFIG = {
+    "mail_host": 'smtp.caoliang.net',
+    "mail_user": 'i@caoliang.net',
+    "mail_pass": '000000',
+    "sender": 'i@caoliang.net',
 }
+
+if os.name in ("nt", ):
+    PROJECT_ROOT = "./"
+    REDIS_CONFIG = {}
+
+    # for blog app:
+    PARSED_ARTICLE_JSON = "static/blog/"
+
+    # for notebook app
+    APP_NOTE_BOOK_CONFIG = {
+        "user_root_foler": "./",
+    }
+    APP_LOG_PATH = "./"
+
+    # for music app
+    MUSIC_FOLDER = "./music"
+
+else:
+    PROJECT_ROOT = "/home/wwwroot/madliar.com"
+    APP_NOTE_BOOK_CONFIG = {
+        "user_root_foler": "/home/wwwroot/notebook",
+    }
+    APP_LOG_PATH = "/home/wwwroot/log"
+    REDIS_CONFIG = {}
+    MUSIC_FOLDER = "./music"

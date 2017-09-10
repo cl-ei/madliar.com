@@ -1,0 +1,35 @@
+.jstree-hovered{
+    background-color: #696969 !important;
+    text-decoration: none !important;
+    border-bottom: none !important;
+    color: white !important;
+}
+/*
+ *  for jstree context menu style.
+ */
+.jstree-contextmenu{
+    margin: 0;
+    position: absolute;
+    background: #ffffff;
+    box-shadow: 2px 2px 2px #999;
+}
+.vakata-context .vakata-context-hover>a, .vakata-context-hover li:focus, .vakata-context-hover li>a:hover, .vakata-context li>a:hover{
+    background: #ddd;
+    border: none;
+    box-shadow: none;
+}
+.vakata-context li>a .vakata-contextmenu-sep{
+    border-left: none;
+    width: 0;
+}
+.vakata-context li>a{
+    line-height: 16px;
+    height: 24px;
+    padding-top: 4px;
+    padding-left:1em;
+}
+/* end for */
+.jstree-themeicon-custom{
+    background-size: 18px !important;
+    background-repeat: no-repeat !important;
+}

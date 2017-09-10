@@ -1,0 +1,112 @@
+
+<!DOCTYPE html>
+<html class="no-js" lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <title>{% if title %}{{ title }} - {% endif %}CL's 疯人云笔记</title>
+    <meta name="author" content="{% if author %}{{ author }}{% else %}CL{% endif %}" />
+    <meta name="description" content="{% if description %}{{ description }}{% else %}一个注重内容的云笔记本，永久免费{% endif %}" />
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="MobileOptimized" content="320" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/static/css/jstree.min.css">
+    <link rel="stylesheet" href="/static/notebook/jstree.custom.css">
+    <link rel="stylesheet" href="/static/notebook/main.css">
+
+    <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/static/js/jstree.min.js"></script>
+    <script type="text/javascript" src="/static/js/marked.js"></script>
+    <script type="text/javascript" src="/static/notebook/main.js"></script>
+    <script>
+        window.contextData = {};
+        window.contextData.loginInfo = {% if login_info %}{{ login_info }}{% else %}false{% endif %};
+    </script>
+</head>
+
+<body>
+    <div id="uavaliable-mask">此应用不支持在移动设备上使用。</div>
+    <div id="nav">
+        <div class="left-nav">
+            <a href="/"><i class="fa fa-home" aria-hidden="true"></i> 首页</a>
+            <span id="top-dynamic-nav"></span>
+        </div>
+        <div class="right-nav"></div>
+    </div>
+    <div id="content">
+        <div id="folder-tree"><div id="jstree"></div></div>
+        <div id="sub-content">
+            <div id="input-area"><textarea id="input-text-area" type="text" name="detail"></textarea></div>
+            <div id="content-area">
+                <div id="content-text"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="cl-prompt">
+        <div class="cl-prompt-close">X</div>
+        <div class="cl-prompt-header"><h4 id="cl-prompt-title"></h4></div>
+        <div class="cl-prompt-body"><p id="cl-prompt-content"></p></div>
+    </div>
+    <div class="modal fade" id="login-modal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 id="login-or-regist"></h4>
+                </div>
+                <div class="modal-body" style="text-align: center;">
+                    <p>*请键入正确的邮箱。</p>
+                    <div>
+                        <label>邮箱: <input class="redinput" type="text" name="email"/></label>
+                    </div>
+                    <div>
+                        <label>密码: <input class="redinput" type="password" name="password"/></label>
+                    </div>
+                    <button class="button center" id="login-btn">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <form id="upload-file-form">
+        <input type="file" id="file-input" name="file"/>上传
+    </form>
+    <textarea id="default-file-content" class="hidden-area">
+## 疯人云笔记
+<img src="https://www.caoliang.net/static/blog/img/blog/20161211/0.jpg" style="width: 100%">
+
+### 开始使用
+　　此编辑器支持markdown语法，当然也兼容html，支持将笔记发送到你的邮箱。
+
+　　你可以像示例那样，在文章开始处用“---”划分一个隐藏的区域，在这个区域内你可以自由的为文章添加属性。这些属性有特殊的作用。下面是部分疯人编辑器支持的属性：
+
+* sendto:  将文章发送到这个邮箱（目前仅支持发送给自己）
+* title:  文章标题
+* category:  分类（保留）
+* tags/tag:  文章的标签（保留）
+* description:  文章的简短描述（保留）
+
+　　在疯人编辑器编辑的文章，都可以保存在caoliang.net。但必须经过身份认证。注册过程很简单，你现在就可以点击【保存】按钮试一试。
+
+### 插入图片
+　　将图片拖到输入框，在资源备选框中点击要插入的图片，然后Ctrl V即可。下个版本中，图片的链接会在图片被拖入输入框时自动插入到光标处，只需一步。<img src="/static/blog/img/project/20161225/upload_image.gif" style="width: 100%">
+
+### 安全和隐私
+　　你在caoliang.net上上传的所有内容，网站的维护者都尽可能的保护你的隐私，但你的资料依然有可能会其他人查阅，甚至大范围泄露到互联网，你的信息安全在这里并没有充足的保障。所以，请不要在这里上传敏感信息。
+
+### 最后
+　　已知的问题：
+* 由于阿里云的限制，发送的邮件将有很大几率被他们的服务器拦截。所以，“保存到邮箱”是一个碰运气的功能
+
+　　下一个版本：
+* 导出为pdf
+* 更全面markdown支持（语法高亮）
+* 拖入文件到输入框即编辑
+
+　　有任何的建议，欢迎发送邮件反馈。反馈邮箱：i@caoliang.net。
+
+    </textarea>
+</body>
+</html>

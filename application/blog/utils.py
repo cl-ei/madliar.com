@@ -1,9 +1,10 @@
 # -*- coding:utf-8 -*-
-import random
-import sys
-import os
-import re
 import json
+import os
+import random
+import re
+import sys
+
 from etc.config import DEBUG, PROJECT_ROOT, POST_ARTICLE_PATH, \
     PARSED_ARTICLE_JSON
 from lib.randomlib import randstr

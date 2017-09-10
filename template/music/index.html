@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html  class="no-js" lang="zh-CN">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <meta charset="utf-8">
+    <title>CL's Music</title>
+    <meta name="author" content="Caoliang">
+    <meta name="description" content="Caoliang 的音乐">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="/static/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/static/css/jquery.nstSlider.min.css">
+    <link rel="stylesheet" href="/static/music/css/main.css">
+
+    <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.nstSlider.min.js"></script>
+    {% if ref %}
+    <script type="text/javascript" src="/static/music/js/main.js"></script>
+    <script>window.music_list = {{ music_list }};</script>
+    {% else %}
+    <style>
+        body{
+            margin: 0;
+            padding: 0;
+            display: block;
+            height: 100%;
+            width: 100%;
+            position: absolute;
+        }
+    </style>
+    {% endif %}
+</head>
+<body>
+{% if ref %}
+    <div id="player_border">
+        <div id="first_layer">
+            <div id="player_name" class="hxjj">
+                <img id="friend_link_p" src="/static/music/player/head.png">
+            </div>
+
+            <div id="btns">
+                <img id="btn_play" src="/static/music/player/pause.png" />
+                <img id="pgs_bar" src="/static/music/player/pgs_bar.png" />
+
+                <div id="pgs_border">
+                    <img id="pgs_block" src="/static/music/player/pgs_block.png" />
+                </div>
+            </div>
+            <div id="btn_border">
+                <a id="music_name" class="nounderline">播放：枕着你的名字入眠</a>
+                <a id="music_play_next_btn" class="nounderline"><i class="fa fa-forward fa-fw"></i>下一曲</a>
+                <a id="music_list_btn" class="nounderline"><i class="fa fa-th-list fa-fw"></i>列表</a>
+            </div>
+        </div>
+
+        <div id="second_layer">
+            <div id="ctls">
+                <a id="btn_up" class="nounderline"><i class="fa fa-chevron-left fa-fw"></i>上翻</a>
+                <a id="btn_back" class="nounderline"><i class="fa fa-undo fa-fw"></i>返回</a>
+                <a id="btn_down" class="nounderline">下翻<i class="fa fa-chevron-right fa-fw"></i></a>
+            </div>
+
+            <div id = "msc_list_border">
+                <div id="msc_list"></div>
+            </div>
+        </div>
+    </div>
+    <div id="audio_border">
+        <audio id="audio" src=""></audio>
+    </div>
+{% else %}
+<iframe id="player_ifr" name="frame" src="/music?ref=True" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" width="350px" height="150px"></iframe>
+{% endif %}
+</body>
+</html>

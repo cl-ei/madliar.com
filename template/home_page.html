@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>MadLiar</title>
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="MobileOptimized" content="360" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="{{ page.get('description') }}">
+    <meta name="keywords" content="{{ page.get('keywords') }}"/>
+    <meta name="author" content="{{ page.get('author') }}">
+
+    <link rel="icon" href="/static/img/favicon.png">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/static/css/animate.min.css" />
+    <link rel="stylesheet" href="/static/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/static/blog/css/style.css" />
+</head>
+
+<body>
+    <div id="page-footer" class="copyright center">
+        <p><span>© 2014-2017 MadLiar</span>&nbsp|&nbsp<span>MadLiar freamwork powered.</span></p>
+    </div>
+    <div class="menu clearfix">
+        <div class="menu-inner clearfix">
+            <div class="clearfix logo">MADL!AR</div>
+            <div class="clearfix right-menu">
+                <ul class="clearfix navi">
+                    <li><a id="home-view" class="current" href="javascript:void(0)">首页</a></li>
+                    <li><a id="list-view" href="javascript:void(0)">列表</a></li>
+                    <li><a id="category-view" href="https://www.caoliang.net/blog/write" target="_blank">记录</a></li>
+                    <li><a id="about-view" href="javascript:void(0)">关于</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="motto center">
+        <div id="madliar-title" class="big">
+            <h2 class="inner-title">MADL!AR</h2>
+            <span id="loading-points"><i class="fa fa-circle-o-notch fa-spin fa-3x fa-fw"></i></span>
+        </div>
+    </div>
+    <section class="clearfix page">
+        <div id="home-sub-page" style="display: none"></div>
+        <div id="detail-sub-page" style="display: none"></div>
+        <div id="list-view-sub" style="display: none">
+            <div class="detail-container">
+                <div class="detail-paper">
+                    <div class="detail-header">
+                        <div class="detail-article-title">
+                            最新发布
+                            <p class="category-desc">
+                                归类于：
+                                <a id="sel-guandian" class="nounderline" href="javascript:void(0)">观点 </a>,
+                                <a id="sel-biji" class="nounderline" href="javascript:void(0)">学习笔记</a>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div id="article-list-tag" class="detail-content"></div>
+                    <div id="article-list" class="detail-content"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="about-sub-page" class="about-container" style="display: none">
+            <img class="head-background-img" src="/static/img/head-bg.jpg">
+            <div id="head-img-container"><img class="head-img" src="/static/img/head.jpg"></div>
+            <h4>疯人&nbsp·&nbspCL</h4>
+            <div id="about-text">
+                <h2>关于&nbsp·&nbspMADL!AR</h2>
+                <p>博主CL，编程爱好者，目前在做服务器端的软件开发。“madliar”意为“疯子”、“谎言者”，略含贬义，
+                    但它挺适合这个博客的：博文大多只是我个人肤浅的观点，少数粗浅的学习笔记。如果你有任何建议或吐槽，
+                    欢迎请给我发邮件：<br />i#caoliang.net。
+                </p>
+                <br />
+                <h2>优秀博客推荐</h2>
+                <ul>
+                    <li><a target="_blank" href="http://wangyu.name/">即刻出发</a></li>
+                    <li><a target="_blank" href="https://mozillazg.github.io/">mozillazg</a></li>
+                    <li><a target="_blank" href="http://dkjiaoyang.com/">易冷天涯</a></li>
+                    <li><a target="_blank" href="https://alexlee.cn/">聪头话斋</a></li>
+                </ul>
+                <br>
+                <h2>博客结构</h2>
+                <p>这个博客运行在一个自制的基于Python语言的WSGI后端框架上。如果你感兴趣，肯定会发现这个博客只有一个页面。
+                    所有的文章都存放在一个以64位随机字符串命名的js文件当中，通过JavaScript来处理交互逻辑。这也就意味着只需要加载一次，
+                    就可以在离线的情况下浏览全站的内容。
+                </p>
+                <p>这样做当然有诸多缺点，然而并不是这个WSGI框架不支持多页面，是因为我觉得一个小小的博客不应该与服务器有太多的交互逻辑。
+                    后端使用了一个类似Django模板系统的组件来处理html模板文件，这里受到mozillazg的启发很大，在此表示感谢。
+                    博客基于markdown语言，使用了Christopher Jeffrey的md转html的js插件，在此声明。
+                    前端的样式主要参照了两个网站，其一是<a target="_blank" href="http://www.jsonmedia.com">镜尚传媒的官网</a>，
+                    当时其官网尚在筹备当中；其二是<a target="_blank" href="https://blog.coding.net/">码市</a>的博客：
+                    <img style="width: 100%" src="/static/img/jsonmedia.jpg"/>
+                    <img style="width: 100%" src="/static/img/coding.jpg"/>
+                    特此声明。
+                </p>
+            </div>
+        </div>
+    </section>
+    <img id="background" src=""/>
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/marked.js"></script>
+    <script src="/static/js/rainyday.js"></script>
+    <script src="{{ article_js }}"></script>
+    <script src="/static/blog/js/mHdwTj0ItvA57e3a9B.js"></script>
+</body>
+</html>

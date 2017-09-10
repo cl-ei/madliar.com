@@ -1,0 +1,186 @@
+.hxjj{
+	background-position-y: 5px;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    /*background-image: url("/static/friend_link/hxjj.jpg");*/
+}
+
+.nounderline:hover{
+	text-decoration: blink;
+	color: red;
+	cursor: pointer;
+}
+
+a:hover{
+	text-decoration: blink;
+	color: red;
+	cursor: pointer;
+}
+
+body{	
+	display:none;
+	background-color:white;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+p{
+	font-family:'Microsoft YaHei UI Light','Microsoft YaHei UI',sans-serif;
+}
+#friend_link_p{
+	margin-bottom: 0;
+	margin-top:0;
+	width:100%;
+}
+#music_list_btn{
+	display:block;
+	float:right;
+}
+.color_font{
+	color: transparent;
+    -webkit-background-clip: text;
+    background: -webkit-linear-gradient(left,#ff1700 10%,#fff140 18%, #7aff00 30%,#0ff 45%,#06f 70%, #c0f 85%, rgb(228, 255, 0));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 40px;
+    white-space: nowrap;
+}
+#audio_border{
+	width:0px;
+	height:0px;
+}
+#player_border{	
+	height: 150px;
+	width: 350px;
+    overflow: hidden;    
+}
+#player{
+	font-family:'Microsoft YaHei UI Light','Microsoft YaHei UI','Microsoft YaHei',sans-serif;
+	width: 350px;
+	height: 125px;
+	margin-top:0px;
+}
+#player_name{
+	font-weight: normal;
+	margin-top: 15px;
+    margin-left:45px;
+    font-size:45px;    
+    color: #555;
+    cursor: default;
+    line-height: 60px;
+    width: 280px;
+    margin-bottom: -15px;
+}
+#player_layer{
+	font-weight: normal;
+	color: #555;
+	margin-left:50px;
+	font-size:45px;
+}
+#btns{
+}
+#btn_play{
+	width:30px;
+	position:absolute;
+	margin-top:0;
+	margin-left: 10px;
+	z-index:99;
+}
+#pgs_bar{
+	width:275px;
+	height:30px;
+	position:absolute;
+	margin-top:0;
+	margin-left:50px;
+}
+#pgs_border{
+	width: 325px;
+	height: 30px;
+	position: absolute;
+}
+#pgs_block{
+	width:20px;
+	height:30px;
+	position:absolute;
+	margin-top:0;
+	margin-left:50px;
+}
+#btn_border{
+	margin-left:50px;
+	width: 275px;
+	font-family:'Microsoft YaHei'; 
+	font-size:12px;
+	padding-top:30px;
+}
+#music_name{
+	display:block;
+	float:left;
+	width:170px;
+}
+#second_layer{
+	display: none;
+	position: relative;
+	font-family:'Microsoft YaHei UI';
+	color: rgb(68, 68, 68);
+}
+#ctls{
+	font-size:14px;
+	position:absolute;
+	width:350px;
+	height:16px;
+	margin-top: 5px;	
+}
+#btn_up{
+	margin-left: 8%;
+    width: 33%;
+    display: inline;
+}
+#btn_back{
+	margin-left: 20%;
+    width: 33%;
+    display: inline;
+}
+#btn_down{
+	display: inline;
+    margin-left: 20%;
+    width: 33%;
+}
+#msc_list_border{
+	font-size: 14px;
+    position: absolute;
+    width: 350px;
+    height: 120px;
+    margin-top: 25px;
+    overflow: hidden;
+}
+#msc_list{
+	margin-top: 0px;
+	text-align: center;
+	line-height: 20px;
+}
+#center_box{
+    width: 0;
+    height: 0;
+    position: fixed;
+    left: 50%;
+    right: 50%;
+    top: 50%;
+    bottom: 50%;
+}
+#player_fr_border{
+    margin-left: -175px;
+    margin-top: -100px;
+}
+#player_ifr{
+    border: 1px solid #000;
+    top: 50%;
+    left: 50%;
+    margin-left: -175px;
+    margin-top: -100px;
+    position: inherit;
+    padding: 1px;
+}

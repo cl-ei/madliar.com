@@ -1,8 +1,8 @@
 # -*- coding:utf-8 -*-
 import os
-import json
-from wsgiserver.template import render
-from wsgiserver.http import HttpResponse
+
+from madliar.http.response import HttpResponse
+from madliar.template import render
 
 from etc.config import PROJECT_ROOT, PARSED_ARTICLE_JSON
 
@@ -21,8 +21,8 @@ def home_page(request):
         "article_js": article_js,
         "page": {
             "author": "CL",
-            "description": "CL£¬±à³Ì°®ºÃÕß£¬ÕâÊÇCLµÄ¹Ù·½²©¿Í£¬¼ÇÂ¼Éú»î¸ĞÎòºÍÑ§Ï°µãµÎ¡£",
-            "keywords": "MADLIAR, CL, CL's ·èÑÔ·èÓï, ·èÑÔ·èÓï, ·çÑÔ·çÓï, CL²©¿Í",
+            "description": u"CLï¼Œç¼–ç¨‹çˆ±å¥½è€…ï¼Œè¿™æ˜¯CLçš„å®˜æ–¹åšå®¢ï¼Œè®°å½•ç”Ÿæ´»æ„Ÿæ‚Ÿå’Œå­¦ä¹ ç‚¹æ»´ã€‚",
+            "keywords": u"MADLIAR, CL, CL's ç–¯è¨€ç–¯è¯­, ç–¯è¨€ç–¯è¯­, é£è¨€é£è¯­, CLåšå®¢",
         },
     }
     return render(
@@ -30,7 +30,3 @@ def home_page(request):
         context=context
     )
 
-
-def record(request):
-    # TODO: add ...
-    return HttpResponse(json.dumps({"err_code": 0}), content_type="application/json")

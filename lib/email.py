@@ -1,13 +1,16 @@
-# -*- coding:utf-8 -*-
-
-import smtplib
 import os
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+import smtplib
 from email.mime.image import MIMEImage
-from log import logging
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
-from etc.config import mail_host, mail_user, mail_pass, sender
+from etc.config import EMAIL_CONFIG
+from etc.log4 import logger as logging
+
+sender = EMAIL_CONFIG.get("sender")
+mail_user = EMAIL_CONFIG.get("mail_user")
+mail_pass = EMAIL_CONFIG.get("mail_pass")
+mail_host = EMAIL_CONFIG.get("mail_host")
 
 
 def send_text_email(receiver, title, content):
@@ -19,7 +22,7 @@ def send_text_email(receiver, title, content):
 
     try:
         smtp_obj = smtplib.SMTP()
-        smtp_obj.connect(mail_host, 25)
+        smtp_obj.connect(EMAIL_CONFIG.get("mail_host"), 25)
         smtp_obj.login(mail_user, mail_pass)
         smtp_obj.sendmail(sender, receiver, msg.as_string())
         smtp_obj.quit()
