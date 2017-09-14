@@ -1,14 +1,31 @@
 import os
-import logging
+from etc.config import LOG_PATH
+
+__all__ = ("logging", )
 
 
-from etc.config import APP_LOG_PATH
+def __make_logger(name, log_file_name, level="DEBUG"):
+    import logging
 
-__all__ = ("logger", )
+    level_names = {
+        'CRITICAL': logging.CRITICAL,
+        'ERROR': logging.ERROR,
+        'WARN': logging.WARNING,
+        'WARNING': logging.WARNING,
+        'INFO': logging.INFO,
+        'DEBUG': logging.DEBUG,
+        'NOTSET': logging.NOTSET,
+    }
 
-logger = logging.getLogger("madliar_app")
-logger.setLevel(logging.DEBUG)
-fh = logging.FileHandler(os.path.join(APP_LOG_PATH, "madliar_app.log"))
-formatter = logging.Formatter('%(levelname)s %(asctime)s %(filename)s:%(lineno)d:%(funcName)s %(message)s')
-fh.setFormatter(formatter)
-logger.addHandler(fh)
+    fh = logging.FileHandler(os.path.join(LOG_PATH, log_file_name))
+    fh.setFormatter(logging.Formatter(
+        '%(levelname)s %(asctime)s %(filename)s:%(lineno)d:%(funcName)s %(message)s'
+    ))
+
+    logger = logging.getLogger(name)
+    logger.setLevel(level_names.get(level, logging.DEBUG))
+    logger.addHandler(fh)
+    return logger
+
+
+logging = __make_logger(name="madliar_app", log_file_name="madliar_app.log")

@@ -5,7 +5,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 from etc.config import EMAIL_CONFIG
-from etc.log4 import logger as logging
+from etc.log4 import logging
 
 sender = EMAIL_CONFIG.get("sender")
 mail_user = EMAIL_CONFIG.get("mail_user")

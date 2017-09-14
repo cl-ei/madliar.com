@@ -24,7 +24,7 @@ MUSIC_FOLDER = "./music"
 # ----------------------------- windows CONFIG ----------------------------- #
 if os.name in ("nt", ):
     PROJECT_ROOT = "./"
-    APP_LOG_PATH = "./"
+    LOG_PATH = "./"
 
     # for notebook app
     APP_NOTE_BOOK_CONFIG = {
@@ -34,7 +34,7 @@ if os.name in ("nt", ):
 # ----------------------------- linux CONFIG ----------------------------- #
 else:
     PROJECT_ROOT = "/home/wwwroot/madliar.com"
-    APP_LOG_PATH = "/home/wwwroot/log"
+    LOG_PATH = "/home/wwwroot/log"
 
     APP_NOTE_BOOK_CONFIG = {
         "user_root_foler": "/home/wwwroot/notebook",
