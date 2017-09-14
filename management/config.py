@@ -1,21 +1,29 @@
 """
-website config.
+config.py for madliar framework.
 
+Only project environ configurations fit to be collected in
+this config file, not business logic config.
 """
 
 import os
 
-if os.name in ("nt", ):
-    from management.nt_config import *
-else:
-    from management.posix_config import *
-
-
-EMAIL_CONFIG = {
-    "mail_host": 'smtp.caoliang.net',
-    "mail_user": 'i@caoliang.net',
-    "mail_pass": '000000',
-    "sender": 'i@caoliang.net',
-}
-
 INSTALLED_MIDDLEWARE = ()
+
+if os.name in ("nt", ):
+    DEBUG = True
+
+    ENABLE_SYS_LOG = True
+    SYS_LOG_PATH = "./"
+
+    STATICS_URL_MAP = {
+        "^/static": "static",
+        "^/music_file": "music",
+    }
+
+else:
+    DEBUG = False
+
+    ENABLE_SYS_LOG = True
+    SYS_LOG_PATH = "/home/wwwroot/log"
+
+    STATICS_URL_MAP = {}
