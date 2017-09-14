@@ -17,7 +17,7 @@ REDIS_CONFIG = {
 
 }
 
-PARSED_ARTICLE_JSON = "static/blog/"
+PARSED_ARTICLE_JSON = "static/blog/js/article"
 MUSIC_FOLDER = "./music"
 
 
