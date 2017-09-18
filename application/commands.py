@@ -6,7 +6,8 @@ from madliar.management import reg_command
 
 @reg_command
 def analysis(*args, **kwargs):
-    """analysis website visitors."""
+    """analysis website visitors.
+    """
     with open("nginx_access.log") as f:
         recoreds = f.readlines()
 
@@ -31,6 +32,7 @@ def analysis(*args, **kwargs):
 
 @reg_command
 def load_article(*args, **kwargs):
-    """load articles."""
+    """load articles.
+    """
     from application.blog.utils import generate_cached_article_json
     return generate_cached_article_json(*args, **kwargs)

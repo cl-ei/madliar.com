@@ -18,6 +18,7 @@ REDIS_CONFIG = {
 }
 
 PARSED_ARTICLE_JSON = "static/blog/js/article"
+POST_ARTICLE_PATH = "template/_post/article"
 MUSIC_FOLDER = "./music"
 
 

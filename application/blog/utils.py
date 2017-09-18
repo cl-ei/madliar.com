@@ -5,8 +5,7 @@ import random
 import re
 import sys
 
-from etc.config import DEBUG, PROJECT_ROOT, POST_ARTICLE_PATH, \
-    PARSED_ARTICLE_JSON
+from etc.config import PROJECT_ROOT, POST_ARTICLE_PATH, PARSED_ARTICLE_JSON
 from lib.randomlib import randstr
 
 
@@ -101,7 +100,7 @@ def generate_cached_article_json(*args, **kwargs):
     detail = json.dumps(
         article_list,
         ensure_ascii=False,
-        indent=4 if DEBUG else None
+        indent=4
     )
     id_list = json.dumps(sorted(article_list.keys())[::-1])
     total_article = u"".join([
