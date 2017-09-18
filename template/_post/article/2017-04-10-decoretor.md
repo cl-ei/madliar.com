@@ -10,7 +10,32 @@ tags: 编程， Python
 
 <!--more-->
 ## 两种装饰器，一个本质
-　　装饰器分两种，虽然总的作用都是对一个传入的函数进行封装（或者说魔改），但他们是有区别的。要始终铭记：
+　　对于装饰器，我觉得官方文档用了简短的2、30行就已经描述的非常详尽明了了，有意思的一段是下面：
+```
+@dec2
+@dec1
+def func(arg1, arg2, ...):
+    pass
+
+# This is equivalent to:
+
+def func(arg1, arg2, ...):
+    pass
+func = dec2(dec1(func))
+
+# ----------------------------------------------
+
+@decomaker(argA, argB, ...)
+def func(arg1, arg2, ...):
+    pass
+    
+# This is equivalent to:
+
+def func(arg1, arg2, ...):
+    pass
+func = decomaker(argA, argB, ...)(func)
+```
+　　可以知道，装饰器只是一种语法糖的存在，装饰器的代码会在被装饰的函数定义的时候执行，也就是被import后载入内存时生效。装饰器分两种，具体如下：
 1. __不带参数的装饰器：接收一个函数f作为参数，返回另一个函数fd，在调用函数f的地方，用fd取而代之。__
 1. __带参数的装饰器：接收设定的参数，返回一个装饰器。返回这个装饰器可以是带参数的，也可以不带参数。但如果它带参数，这个返回的装饰器就必须再返回一个装饰器。直到最后返回的装饰器是不带参数的，也就是上面这种装饰器，就进入1的逻辑。__
 
@@ -202,52 +227,4 @@ a.test_property
 a.test_property
 [out]: 1
 ```
-可以看到，只要被装饰的方法运行过一次，就再也不调用它，而是直接读取缓存的结果。神奇的代码在这一句```res = instance.__dict__[self.name] = self.func(instance)```，它用被装饰的函数的运行结果，替换实例的内置属性\__dict\__中的“test_property”的值。所以在之后访问这个属性，就直接取\__dict\__中缓存的结果，访问不到test_property函数。
-
-所以，用类实现的装饰器，是在被装饰函数调用的时候，产生这个类的实例，并访问这个实例对应的方法。需要注意的是，上述的装饰器已经把"test_property"转为属性了，所以再调用a.test_property()就会发生错误。如果只是想单纯的缓存这个方法的输出，而不转变为实例的属性，那么可以这么写：
-```
-class cached_property(object):
-    def __init__(self, func, name=None):
-        self.func = func
-        self.__doc__ = getattr(func, '__doc__')
-        self.name = name or func.__name__
-
-    def __get__(self, instance, cls=None):
-        if instance is None:
-            return self
-        if not hasattr(self, "result"):
-            self.result = self.func(instance)
-        return self.__call__
-
-    def __call__(self):
-        return self.result
-```
-那么就可以重复调用a.test_property()来获取结果，但真正的test_property只会运行一次。同样这段代码，可不可以用函数来实现呢？当然可以，一个简单的版本如下：
-```
-def cached_property(func):
-    def wappered_function(self):
-        res = self.__dict__[func.__name__] = func(self)
-        return res
-
-    return wappered_function
-```
-代码很简短，但是，只有在被装饰的类实例化之后、尝试调用被装饰的这个方法的时候，才会执行装饰器里的代码。也就是说，用这个版本来装饰Test类的test_property，第一次需要写成a.test_property()，而之后要写成a.test_property。
-实例：
-```
-class Test(object):
-    @cached_property
-    def test_property(self):
-        print "calc"
-        return 1
-
-if __name__ == "__main__":
-    a = Test()
-    print a.test_property()
-    print a.test_property
-
-运行结果：
-[out]: calc
-1
-1
-```
-
+可以看到，只要被装饰的方法运行过一次，就再也不调用它，而是直接读取缓存的结果。神奇的代码在这一句```res = instance.__dict__[self.name] = self.func(instance)```，它用被装饰的函数的运行结果，替换实例的内置属性\__dict\__中的“test_property”的值。所以在之后访问这个属性，就直接取\__dict\__中缓存的结果，访问不到test_property函数。所以，用类实现的装饰器与用函数实现的装饰器的区别，就是前者可以借助类的属性来保存一些中间变量，虽然实现起来更加繁琐，但功能也更加强大。
