@@ -4,7 +4,7 @@ import sys
 from madliar.management import reg_command
 
 
-@reg_command
+@reg_command(name="analysis")
 def analysis(*args, **kwargs):
     """analysis website visitors.
     """
@@ -30,7 +30,7 @@ def analysis(*args, **kwargs):
     return domain_rec
 
 
-@reg_command
+@reg_command(name="load_article")
 def load_article(*args, **kwargs):
     """load articles.
     """
