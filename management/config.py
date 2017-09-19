@@ -7,7 +7,9 @@ this config file, not business logic config.
 
 import os
 
-INSTALLED_MIDDLEWARE = ()
+INSTALLED_MIDDLEWARE = (
+    "application.middleware.force_return_410_when_not_found",
+)
 
 if os.name in ("nt", ):
     DEBUG = True
