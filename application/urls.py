@@ -1,11 +1,27 @@
+from madliar.http.response import HttpResponse
+
 from application.blog.urls import url as blog_url_map
 from application.blog.views import home_page
 from application.music.urls import url as music_url_map
 from application.notebook.urls import url as notebook_url_map
 
+
+def robots_response(request):
+    response = HttpResponse(
+        content=(
+            "User-agent: *"
+            "Disallow: /static/"
+        ),
+        content_type="text/plain; charset=utf-8",
+        charset="gbk"
+    )
+    return response
+
+
 url = {
-    "^/$": home_page,
-    "^/blog": blog_url_map,
-    "^/music": music_url_map,
-    "^/notebook": notebook_url_map,
+    r"^/robots?\.txt/?": robots_response,
+    r"^/$": home_page,
+    r"^/blog": blog_url_map,
+    r"^/music": music_url_map,
+    r"^/notebook": notebook_url_map,
 }
