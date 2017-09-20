@@ -1,5 +1,6 @@
 import re
 import time
+import datetime
 
 from etc.log4 import logging, access_logging
 from madliar.http.response import Http410Response
@@ -41,12 +42,15 @@ def recored_access_info(get_response):
             start_proc_time = time.time()
 
         response = get_response(request, *args, **kwargs)
+
         if request_ip:
             process_time = time.time() - start_proc_time
+            now_time = datetime.datetime.now().isoformat()[11:23]
+            status = response.status_code
 
             access_logging.info(
-                "[ %s ][ %.3f ][ %s ][ %s ][ %s ]"
-                % (response.status_code, process_time, request_ip, path_info, user_agent)
+                "[ %s ][ %s ][ %.3f ][ %s ][ %s ][ %s ]"
+                % (now_time, status, process_time, request_ip, path_info, user_agent)
             )
         return response
     return warp_get_response
