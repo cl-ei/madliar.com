@@ -12,8 +12,8 @@ def robots_response(request):
             "User-agent:  *\n"
             "Disallow:  /static/\n"
         ),
-        content_type="text/plain; charset=utf-8",
-        charset="gbk"
+        content_type="text/plain",
+        charset="utf-8"
     )
     return response
 
