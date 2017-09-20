@@ -9,8 +9,8 @@ from application.notebook.urls import url as notebook_url_map
 def robots_response(request):
     response = HttpResponse(
         content=(
-            "User-agent: *"
-            "Disallow: /static/"
+            "User-agent:  *\n"
+            "Disallow:  /static/\n"
         ),
         content_type="text/plain; charset=utf-8",
         charset="gbk"
