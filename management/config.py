@@ -9,6 +9,7 @@ import os
 
 INSTALLED_MIDDLEWARE = (
     "application.middleware.force_return_410_when_not_found",
+    "application.middleware.recored_access_info",
 )
 
 if os.name in ("nt", ):

@@ -1,10 +1,12 @@
 import os
+import datetime
+
 from etc.config import LOG_PATH
 
 __all__ = ("logging", )
 
 
-def __make_logger(name, log_file_name, level="DEBUG"):
+def __make_logger(name, log_file_name, level="DEBUG", log_format=None):
     import logging
 
     level_names = {
@@ -18,14 +20,25 @@ def __make_logger(name, log_file_name, level="DEBUG"):
     }
 
     fh = logging.FileHandler(os.path.join(LOG_PATH, log_file_name))
-    fh.setFormatter(logging.Formatter(
-        '%(levelname)s %(asctime)s %(filename)s:%(lineno)d:%(funcName)s %(message)s'
-    ))
+
+    if log_format is None:
+        log_format = '%(levelname)s %(asctime)s %(filename)s:%(lineno)d:%(funcName)s %(message)s'
+    fh.setFormatter(logging.Formatter(log_format))
 
     logger = logging.getLogger(name)
-    logger.setLevel(level_names.get(level, logging.DEBUG))
+    logger.setLevel(level_names.get(level.upper(), logging.DEBUG))
     logger.addHandler(fh)
     return logger
 
 
-logging = __make_logger(name="madliar_app", log_file_name="madliar_app.log")
+logging = __make_logger(
+    name="madliar_app",
+    log_file_name="madliar_app.log",
+)
+
+access_logging = __make_logger(
+    name="madliar_access",
+    log_file_name="access_%s.log" % datetime.datetime.now().isoformat()[:10],
+    level="INFO",
+    log_format="%(message)s"
+)
