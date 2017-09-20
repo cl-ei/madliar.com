@@ -37,9 +37,12 @@ def recored_access_info(get_response):
             request_ip = None
 
         if request_ip:
+            start_proc_time = time.time()
             user_agent = request.META.get("HTTP_USER_AGENT", "unkown")
             path_info = request.META.get("PATH_INFO", "unkown")
-            start_proc_time = time.time()
+            query_string = request.META.get("QUERY_STRING")
+            if query_string:
+                path_info = "%s?%s" % (path_info, query_string)
 
         response = get_response(request, *args, **kwargs)
 
