@@ -30,14 +30,12 @@ ip_pattern = re.compile(r"((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|
 def recored_access_info(get_response):
     def warp_get_response(request, *args, **kwargs):
         request_ip = request.META.get("HTTP_X_FORWARDED_FOR") or request.META.get("REMOTE_ADDR")
-        if (
-            not ip_pattern.match(request_ip)
-            or request_ip in ("127.0.0.1", "127.0.0.0", "0.0.0.0")
-        ):
+        localhost_ip = ("127.0.0.1", "127.0.0.0", "0.0.0.0")
+        if not ip_pattern.match(request_ip) or request_ip in localhost_ip:
             request_ip = None
-
-        if request_ip:
+        else:
             start_proc_time = time.time()
+            request_ip = "%15s" % request_ip
             user_agent = request.META.get("HTTP_USER_AGENT", "unkown")
             path_info = request.META.get("PATH_INFO", "unkown")
             query_string = request.META.get("QUERY_STRING")
