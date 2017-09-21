@@ -16,7 +16,7 @@ from etc.config import REDIS_CONFIG
 
 __all__ = ()
 __host = REDIS_CONFIG.get("host", "localhost")
-__port = REDIS_CONFIG.get("host", 6379)
+__port = REDIS_CONFIG.get("port", 6379)
 __db = REDIS_CONFIG.get("db", 8)
 connection = None
 __namespace = "memcache"
