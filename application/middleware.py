@@ -1,8 +1,10 @@
 import re
+import os
 import time
 import datetime
 
-from etc.log4 import logging, access_logging
+from etc.log4 import logging
+from etc.config import ACCESS_LOG_PATH
 from madliar.http.response import Http410Response
 
 
@@ -49,9 +51,16 @@ def recored_access_info(get_response):
             now_time = datetime.datetime.now().isoformat()[11:23]
             status = response.status_code
 
-            access_logging.info(
+            access_info = (
                 "[ %s ][ %s ][ %.3f ][ %s ][ %s ][ %s ]"
                 % (now_time, status, process_time, request_ip, path_info, user_agent)
             )
+            access_log_file = os.path.join(
+                ACCESS_LOG_PATH,
+                "%s.log" % datetime.datetime.now().isoformat()[:10]
+            )
+            with open(access_log_file, "a+") as f:
+                print >> f, access_info
+
         return response
     return warp_get_response
