@@ -1,5 +1,4 @@
 import os
-import datetime
 
 from etc.config import LOG_PATH
 
@@ -34,11 +33,4 @@ def __make_logger(name, log_file_name, level="DEBUG", log_format=None):
 logging = __make_logger(
     name="madliar_app",
     log_file_name="madliar_app.log",
-)
-
-access_logging = __make_logger(
-    name="madliar_access",
-    log_file_name="access_%s.log" % datetime.datetime.now().isoformat()[:10],
-    level="INFO",
-    log_format="%(message)s"
 )
