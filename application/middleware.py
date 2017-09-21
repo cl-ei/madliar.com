@@ -6,6 +6,7 @@ import datetime
 from etc.log4 import logging
 from etc.config import ACCESS_LOG_PATH
 from madliar.http.response import Http410Response
+from lib.asyncprocessor import async_exec
 
 
 def force_return_410_when_not_found(get_response):
@@ -37,6 +38,7 @@ def recored_access_info(get_response):
             request_ip = None
         else:
             start_proc_time = time.time()
+            block_bad_request.async_exec(request_ip)
             request_ip = "%15s" % request_ip
             user_agent = request.META.get("HTTP_USER_AGENT", "unkown")
             path_info = request.META.get("PATH_INFO", "unkown")
@@ -64,3 +66,8 @@ def recored_access_info(get_response):
 
         return response
     return warp_get_response
+
+
+@async_exec
+def block_bad_request(ip):
+    logging.debug("Analysis ip: %s" % ip)
