@@ -87,7 +87,7 @@ def recored_access_info(get_response):
         else:
             start_proc_time = time.time()
 
-            if get_ip_info(request_ip) is None:
+            if get_cached_ip_info(request_ip) is None:
                 # Cannot get ip info, start a async task to proc it.
                 block_bad_request.async_exec(request_ip)
 
