@@ -60,7 +60,7 @@ def run_async_processor_server():
             result = target(*args, **kwargs)
             logging.info(
                 "[ASYNC]: Task from [%s.%s] exec finished, result: %s, cost: %s."
-                % (target_module, target_name, result, time.time() - start_proc_time)
+                % (target_module, target_name, result, (time.time() - start_proc_time))
             )
         except Exception as e:
             logging.error(
