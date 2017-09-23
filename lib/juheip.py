@@ -16,10 +16,12 @@ def get_ip_info(ip):
     params = urlencode(params)
     f = urllib.urlopen("%s?%s" % (url, params))
     content = f.read()
-    res = json.loads(content)
-    print res
+    try:
+        res = json.loads(content)
+    except (TypeError, ValueError, UnicodeEncodeError):
+        res = {}
 
-    err_code = res.get("error_code", 0)
+    err_code = res.get("error_code", -1)
     if err_code == 0:
         data = res.get("result", {}).get("area")
     else:
