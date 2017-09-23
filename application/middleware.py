@@ -7,6 +7,8 @@ from etc.log4 import logging
 from etc.config import ACCESS_LOG_PATH
 from madliar.http.response import Http410Response
 from lib.asyncprocessor import async_exec
+from lib import memcache
+from lib.juheip import get_ip_info
 
 
 def force_return_410_when_not_found(get_response):
@@ -71,3 +73,34 @@ def recored_access_info(get_response):
 @async_exec
 def block_bad_request(ip):
     logging.debug("Analysis ip: %s" % ip)
+
+    key = "IP_ANA_%s" % ip
+    ip_info = memcache.get(key)
+    if ip_info is not None:
+        logging.info(
+            "Got ip info from cache:%s -> %s, now don't proc it."
+            % (ip, ip_info)
+        )
+        return True
+
+    err_code, area = get_ip_info(ip)
+    if err_code != 0:
+        logging.error("In `block_bad_request` cannot get ip info: %s" % ip)
+        return True
+
+    from_china = bool(u"\u5e02" in area or u"\u7701" in area)
+    logging.debug("IP JUDGE[ BLOCK?, IP, AREA ]: %s %15s %s" % (from_china, ip, area))
+
+    ip_info = {"from_china": from_china, "area": area}
+    memcache.set(key, ip_info, timeout=0)
+
+    if from_china:
+        return True
+
+    # block black ip
+    command = (
+        "echo deny %s; >> /home/wwwroot/siteconf/black_ip_list.conf "
+        "&& service nginx restart"
+    )
+    os.system(command)
+    return True
