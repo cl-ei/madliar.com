@@ -11,6 +11,52 @@ from lib import memcache
 from lib.juheip import get_ip_info
 
 
+IP_ANALYSIS_KEY = "IP_ANA_%s"
+
+
+def get_cached_ip_info(ip):
+    key = IP_ANALYSIS_KEY % ip
+    return memcache.get(key)
+
+
+def set_cached_ip_info(ip, info):
+    key = IP_ANALYSIS_KEY % ip
+    return memcache.set(key, info, timeout=0)
+
+
+@async_exec
+def block_bad_request(ip):
+    logging.debug("Analysis ip: %s" % ip)
+    ip_info = get_cached_ip_info(ip)
+    if ip_info is not None:
+        logging.info(
+            "Got ip info from cache:%s -> %s, now don't proc it."
+            % (ip, ip_info)
+        )
+        return True
+
+    err_code, area = get_ip_info(ip)
+    if err_code != 0:
+        logging.error("In `block_bad_request` cannot get ip info: %s" % ip)
+        return True
+
+    from_china = bool(u"\u5e02" in area or u"\u7701" in area or u'\u533a' in area)
+    logging.debug("Got the ip(%15s) from %s, from china: %s." % (ip, area, from_china))
+
+    ip_info = {"from_china": from_china, "area": area}
+    set_cached_ip_info(ip, info=ip_info)
+
+    if from_china:
+        return True
+
+    # block black ip
+    with open("/home/wwwroot/siteconf/black_ip_list.conf", "a+") as f:
+        print >> f, "deny %s;" % ip
+    command = "service nginx restart"
+    os.system(command)
+    return True
+
+
 def force_return_410_when_not_found(get_response):
     def warp_get_response(request, *args, **kwargs):
         request_url = request.path_info
@@ -40,7 +86,11 @@ def recored_access_info(get_response):
             request_ip = None
         else:
             start_proc_time = time.time()
-            block_bad_request.async_exec(request_ip)
+
+            if get_ip_info(request_ip) is None:
+                # Cannot get ip info, start a async task to proc it.
+                block_bad_request.async_exec(request_ip)
+
             request_ip = "%15s" % request_ip
             user_agent = request.META.get("HTTP_USER_AGENT", "unkown")
             path_info = request.META.get("PATH_INFO", "unkown")
@@ -68,38 +118,3 @@ def recored_access_info(get_response):
 
         return response
     return warp_get_response
-
-
-@async_exec
-def block_bad_request(ip):
-    logging.debug("Analysis ip: %s" % ip)
-
-    key = "IP_ANA_%s" % ip
-    ip_info = memcache.get(key)
-    if ip_info is not None:
-        logging.info(
-            "Got ip info from cache:%s -> %s, now don't proc it."
-            % (ip, ip_info)
-        )
-        return True
-
-    err_code, area = get_ip_info(ip)
-    if err_code != 0:
-        logging.error("In `block_bad_request` cannot get ip info: %s" % ip)
-        return True
-
-    from_china = bool(u"\u5e02" in area or u"\u7701" in area)
-    logging.debug("IP JUDGE[ BLOCK?, IP, AREA ]: %s %15s %s" % (from_china, ip, area))
-
-    ip_info = {"from_china": from_china, "area": area}
-    memcache.set(key, ip_info, timeout=0)
-
-    if from_china:
-        return True
-
-    # block black ip
-    with open("/home/wwwroot/siteconf/black_ip_list.conf", "a+") as f:
-        print >> f, "deny %s;" % ip
-    command = "service nginx restart"
-    os.system(command)
-    return True
