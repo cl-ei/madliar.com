@@ -79,7 +79,12 @@ def async_exec(f):
         })
 
         q = RedisMessageQueue()
-        return q.publish(message)
+        result = q.publish(message)
+        logging.info(
+            "[ASYNC]: Send async task from [%s.%s] result: %s"
+            % (f.__module__, f.__name__, result)
+        )
+        return result
     setattr(f, "async_exec", wrap_exec_func)
     return f
 
