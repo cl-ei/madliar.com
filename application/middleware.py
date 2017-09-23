@@ -101,6 +101,7 @@ def block_bad_request(ip):
     command = (
         "echo deny %s; >> /home/wwwroot/siteconf/black_ip_list.conf "
         "&& service nginx restart"
+        % ip
     )
     os.system(command)
     return True
