@@ -41,9 +41,10 @@ def run_async_processor_server():
     logging.info("[ASYNC]: Start the Async server.\n")
 
     while True:
-        start_proc_time = time.time()
         s = monitor.parse_response()
         try:
+            start_proc_time = time.time()
+
             m_type, channel, msg = s
             msg = pickle.loads(msg)
 
