@@ -40,7 +40,10 @@ def block_bad_request(ip):
         logging.error("In `block_bad_request` cannot get ip info: %s" % ip)
         return True
 
-    from_china = bool(u"\u5e02" in area or u"\u7701" in area or u'\u533a' in area)
+    from_china = bool(
+        (u"\u5e02" in area or u"\u7701" in area or u"\u533a" in area)
+        and (u"\u5730\u533a" not in area)
+    )
     logging.debug("Got the ip(%15s) from %s, from china: %s." % (ip, area, from_china))
 
     ip_info = {"from_china": from_china, "area": area}
