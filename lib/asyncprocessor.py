@@ -1,6 +1,8 @@
 import redis
 import pickle
 import time
+import random
+import hashlib
 
 from madliar.management import reg_command
 from madliar.utils import get_traceback
@@ -15,6 +17,10 @@ _redis_db = REDIS_CONFIG.get("db", 8)
 _channel = "async_processor"
 
 connection = None
+
+
+def get_md5(string):
+    return hashlib.md5(string).hexdigest()
 
 
 class RedisMessageQueue(object):
@@ -51,7 +57,14 @@ def run_async_processor_server():
             target_module = msg.get("target_module")
             target_name = msg.get("target_name")
 
-            logging.info("[ASYNC]: Received an asynctask from [%s.%s]" % (target_module, target_name))
+            task_id = msg.get("id")
+            trigger_time = msg.get("trigger_time")
+            waitting_time = start_proc_time - float(trigger_time)
+
+            logging.info(
+                "[ASYNC]: Received an asynctask(%s) from [%s.%s], wait time: %s"
+                % (task_id, target_module, target_name, waitting_time)
+            )
 
             args = msg.get("args", ())
             kwargs = msg.get("kwargs", {})
@@ -60,10 +73,10 @@ def run_async_processor_server():
             target = getattr(m, target_name)
             result = target(*args, **kwargs)
 
-            finished_proc_time = time.time()
+            cost_time = time.time() - start_proc_time
             logging.info(
-                "[ASYNC]: Task from [%s.%s] exec finished, result: %s, cost: %s."
-                % (target_module, target_name, result, (finished_proc_time - start_proc_time))
+                "[ASYNC]: Task(%s) from [%s.%s] exec finished, result: %s, cost: %s."
+                % (task_id, target_module, target_name, result, cost_time)
             )
         except Exception as e:
             logging.error(
@@ -74,18 +87,26 @@ def run_async_processor_server():
 
 def async_exec(f):
     def wrap_exec_func(*args, **kwargs):
-        message = pickle.dumps({
+        async_args = {
             "target_module": f.__module__,
             "target_name": f.__name__,
             "args": args,
             "kwargs": kwargs,
-        })
+            "trigger_time": time.time(),
+            "uniqkey": random.random(),
+        }
+
+        args_md5 = get_md5(pickle.dumps(async_args))
+        task_id = "-".join([args_md5[:16], args_md5[16:28], args_md5[28:]])
+        async_args["id"] = task_id
+
+        message = pickle.dumps(async_args)
 
         q = RedisMessageQueue()
         result = q.publish(message)
         logging.info(
-            "[ASYNC]: Send async task from [%s.%s] result: %s"
-            % (f.__module__, f.__name__, result)
+            "[ASYNC]: Send async task(%s) from [%s.%s] result: %s"
+            % (task_id, f.__module__, f.__name__, result)
         )
         return result
     setattr(f, "async_exec", wrap_exec_func)
