@@ -41,7 +41,7 @@ input{
 .left-nav{
     display: block;
     float: left;
-    width: 400px;
+    width: 300px;
 }
 .right-nav{
     display: block;
@@ -99,35 +99,43 @@ input{
 .hidden-area{
     display: none;
 }
+.textarea-title{
+    border-bottom: 1px dashed #ccc;
+    padding: 20px 20px 10px;
+    font-size: 20px;
+    width: calc(100% - 20px);
+    margin-left: 10px;
+    margin-bottom: 10px;
+}
 #nav{
     height: 50px;
     border-bottom: 1px solid #ccc;
     line-height: 50px;
     padding-left: 30px;
 }
-#input-area textarea{
-    height: 100%;
+#input-text-area{
+    height: calc(100% - 80px);
     width: 100%;
     border: none;
     resize: none;
     line-height: 1.6em;
     outline: none;
-    padding: 30px;
+    padding: 0 30px 30px;
 }
 #content-area{
     background: white;
     float: left;
     height: calc(100% - 20px);
-    width: calc(50% - 70px);
+    width: calc(50% - 30px);
     overflow: hidden;
     margin: 22px 20px 0 0;
-    padding: 20px 5px 20px 10px;
+    padding: 0 5px 20px 10px;
     word-wrap: break-word;
     box-shadow: 4px 4px 20px 0 rgba(0, 0, 0, 0.15);
 }
 #content-text{
     width: 100%;
-    height: 100%;
+    height: calc(100% - 60px);
     overflow: auto;
     padding: 0 20px;
 }
@@ -149,9 +157,10 @@ input{
 #input-area{
     float: left;
     width: 50%;
-    margin: 22px 20px 0 0;
+    margin: 22px 10px 0 0;
     height: calc(100% - 20px);
     box-shadow: -4px 5px 20px 7px rgba(0, 0, 0, 0.15);
+    background: white;
 }
 #nav a{
     margin-right: 15px;
@@ -165,12 +174,21 @@ input{
     float: right;
     height: calc(100% - 20px);
 }
+#jstree{
+    overflow: auto;
+    height: 100%;
+}
 @media (max-width: 9999px) {
     #folder-tree {
         width: 220px;
+        margin-top: 22px;
+        height: calc(100% - 40px);
+        background: white;
+        box-shadow: -4px 5px 20px 7px rgba(0, 0, 0, 0.15);
+        padding: 10px;
     }
     #sub-content{
-        width: calc(100% - 230px);
+        width: calc(100% - 240px);
     }
 }
 @media (max-width: 900px) {
@@ -178,7 +196,7 @@ input{
         width: 130px;
     }
     #sub-content{
-        width: calc(100% - 140px);
+        width: calc(100% - 150px);
     }
 }
 @media (max-width: 600px) {
