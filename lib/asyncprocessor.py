@@ -62,7 +62,7 @@ def run_async_processor_server():
             waitting_time = start_proc_time - float(trigger_time)
 
             logging.info(
-                "[ASYNC]: Received an asynctask(%s) from [%s.%s], wait time: %s"
+                "[ASYNC]: Received an asynctask(%s) from [%s.%s], wait time: %.3f s."
                 % (task_id, target_module, target_name, waitting_time)
             )
 
@@ -75,7 +75,7 @@ def run_async_processor_server():
 
             cost_time = time.time() - start_proc_time
             logging.info(
-                "[ASYNC]: Task(%s) from [%s.%s] exec finished, result: %s, cost: %s."
+                "[ASYNC]: Task(%s) from [%s.%s] exec finished, result: %s, cost: %.3f s."
                 % (task_id, target_module, target_name, result, cost_time)
             )
         except Exception as e:
