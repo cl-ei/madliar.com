@@ -11,7 +11,6 @@
     margin: 0;
     position: absolute;
     background: #ffffff;
-    box-shadow: 2px 2px 2px #999;
 }
 .vakata-context .vakata-context-hover>a, .vakata-context-hover li:focus, .vakata-context-hover li>a:hover, .vakata-context li>a:hover{
     background: #ddd;

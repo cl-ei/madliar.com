@@ -122,17 +122,14 @@ $.cl = {
             }
         })
     },
-    renderJstreeContextMenu: function(data){
-        console.log("ContextMenu data: ", data);
+    renderJstreeContextMenu: function(node){
+        console.log("ContextMenu data: ", node);
         return {
-            select_node: false,
-            items: {
-                s: {
-                    "label": "详细信息",
-                    "action": function (data) {
-                        var nodeId = data.reference[0].id;
-                        console.log("nodeId: ", nodeId)
-                    }
+            s: {
+                "label": "详细信息",
+                "action": function (data) {
+                    var nodeId = data.reference[0].id;
+                    console.log("nodeId: ", nodeId)
                 }
             }
         };
@@ -144,6 +141,7 @@ $.cl = {
         }
         jstreeInstance.jstree({
             core: {
+                check_callback: true,
                 data: [{
                     text: "游客的文件夹",
                     state: {opened: true},
@@ -159,8 +157,11 @@ $.cl = {
                 foler: {icon: $.cl.folderIcon},
                 default: {icon: $.cl.folderIcon}
             },
-            contextmenu: $.cl.renderJstreeContextMenu,
-            plugins: ["types", "contextmenu"]
+            contextmenu: {
+                select_node: false,
+                items: $.cl.renderJstreeContextMenu
+            },
+            plugins: ["contextmenu", "types"]
         });
         document.getElementById('input-text-area').value = $("#default-file-content").val();
     },
@@ -187,7 +188,10 @@ $.cl = {
                 foler: {icon: $.cl.folderIcon},
                 default: {icon: $.cl.folderIcon}
             },
-            contextmenu: $.cl.renderJstreeContextMenu,
+            contextmenu: {
+                select_node: false,
+                items: $.cl.renderJstreeContextMenu
+            },
             plugins: ["types", "contextmenu"]
         });
         document.getElementById('input-text-area').value = "";
