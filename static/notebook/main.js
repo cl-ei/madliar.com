@@ -122,6 +122,21 @@ $.cl = {
             }
         })
     },
+    renderJstreeContextMenu: function(data){
+        console.log("ContextMenu data: ", data);
+        return {
+            select_node: false,
+            items: {
+                s: {
+                    "label": "详细信息",
+                    "action": function (data) {
+                        var nodeId = data.reference[0].id;
+                        console.log("nodeId: ", nodeId)
+                    }
+                }
+            }
+        };
+    },
     getAndRenderDefaultFileListAndPage: function(){
         var jstreeInstance = $("#jstree");
         if (jstreeInstance.jstree()){
@@ -144,7 +159,8 @@ $.cl = {
                 foler: {icon: $.cl.folderIcon},
                 default: {icon: $.cl.folderIcon}
             },
-            plugins: ["types"]
+            contextmenu: $.cl.renderJstreeContextMenu,
+            plugins: ["types", "contextmenu"]
         });
         document.getElementById('input-text-area').value = $("#default-file-content").val();
     },
@@ -171,7 +187,8 @@ $.cl = {
                 foler: {icon: $.cl.folderIcon},
                 default: {icon: $.cl.folderIcon}
             },
-            plugins: ["types"]
+            contextmenu: $.cl.renderJstreeContextMenu,
+            plugins: ["types", "contextmenu"]
         });
         document.getElementById('input-text-area').value = "";
     },
