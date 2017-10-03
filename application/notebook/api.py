@@ -109,13 +109,31 @@ def login_required(func):
     return wraped_func
 
 
+def get_file_type(ex_name):
+    return ""
+
+
 @supported_action(action="get_file_list")
 @login_required
 def get_file_list(request):
+    """
+
+    :param request:
+    :return: json data:
+        :id     ->    full path
+        :type   ->    folder, bin, text
+
+    """
     node_id = request.POST.get("id")
     email = request.COOKIES.get("email")
     if node_id == "#":
-        return json_to_response([{"id": ".", "text": email, "children": True}])
+        response = [{
+            "id": ".",
+            "type": "folder",
+            "text": email,
+            "children": True
+        }]
+        return json_to_response(response)
 
     app_root_folder = APP_NOTE_BOOK_CONFIG.get("user_root_foler")
     user_root_foler = os.path.join(app_root_folder, email)
@@ -135,9 +153,10 @@ def get_file_list(request):
                 "children": True,
             })
         if os.path.isfile(this_node_path):
+            file_ex_name = os.path.splitext(child)[1].lstrip(".")
             data.append({
                 "id": os.path.join(node_id, child),
-                "type": "file",
+                "type": get_file_type(file_ex_name),
                 "text": child,
             })
     return json_to_response(data)
