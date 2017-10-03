@@ -152,3 +152,9 @@ def check_path_string_is_avaliable(text):
         except UnicodeEncodeError:
             return False
     return bool(re.match(u"^[a-zA-Z0-9_\u4e00-\u9fa5]+$", text))
+
+
+@supported_action(action="make_dir")
+@login_required
+def make_dir(request):
+    return json_to_response({"err_code": 0})
