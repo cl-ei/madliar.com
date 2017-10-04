@@ -2,6 +2,7 @@
 import json
 import os
 import re
+import shutil
 
 from madliar.http.response import HttpResponse
 
@@ -298,9 +299,8 @@ def rm(request):
         if os.path.isfile(full_path):
             os.remove(full_path)
         else:
-            os.removedirs(full_path)
+            shutil.rmtree(full_path)
     except Exception as e:
-        print e
         # TODO: add log
         return json_to_response({
             "err_code": 500,
@@ -419,7 +419,7 @@ def newfile(request):
             "err_code": 403,
             "err_msg": "新的文件已经存在。"
         })
-    print "full_file_path: %s" % full_file_path
+
     try:
         with open(full_file_path, "w"):
             pass
