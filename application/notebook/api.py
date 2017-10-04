@@ -270,7 +270,7 @@ def rm(request):
     if node_id.split("/")[0] != email:
         return json_to_response({
             "err_code": 403,
-            "err_msg": "你没有权限在此创建目录。"
+            "err_msg": "路径不存在，请稍后再试。"
         })
     if node_id == email:
         return json_to_response({
@@ -289,8 +289,9 @@ def rm(request):
                 "err_code": 403,
                 "err_msg": "错误的编码格式。"
             })
+    full_path = os.path.join(app_notebook_path, path)
     try:
-        shutil.rmtree(path)
+        shutil.rmtree(full_path)
     except Exception as e:
         # TODO: add log
         return json_to_response({
