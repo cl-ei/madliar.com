@@ -298,7 +298,7 @@ def rm(request):
         if os.path.isfile(full_path):
             os.remove(full_path)
         else:
-            os.rmdir(full_path)
+            os.removedirs(full_path)
     except Exception as e:
         print e
         # TODO: add log
