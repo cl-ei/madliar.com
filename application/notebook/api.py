@@ -9,6 +9,8 @@ from madliar.http.response import HttpResponse
 from application.notebook import dao
 from etc.config import APP_NOTE_BOOK_CONFIG
 
+app_notebook_path = APP_NOTE_BOOK_CONFIG.get("user_root_foler")
+
 
 def json_to_response(data):
     return HttpResponse(json.dumps(data), content_type="application/json")
@@ -85,7 +87,6 @@ def regist(request):
         "email": email,
     }
     if response_data.get("err_code") == 0:
-        app_notebook_path = APP_NOTE_BOOK_CONFIG.get("user_root_foler")
         user_root_floder = os.path.join(app_notebook_path, email)
         os.mkdir(user_root_floder)
 
@@ -148,12 +149,11 @@ def get_file_list(request):
         }]
         return json_to_response(response)
 
-    app_root_folder = APP_NOTE_BOOK_CONFIG.get("user_root_foler")
     if node_id.split("/")[0] != email:
         # 沒有权限
         return json_to_response([])
 
-    path = os.path.join(app_root_folder, node_id)
+    path = os.path.join(app_notebook_path, node_id)
     if not os.path.isdir(path):
         return json_to_response([])
 
@@ -231,7 +231,7 @@ def mkdir(request):
                 "err_msg": "错误的编码格式。"
             })
 
-    if not os.path.isdir(node_id):
+    if not os.path.isdir(os.path.join(app_notebook_path, node_id)):
         return json_to_response({
             "err_code": 403,
             "err_msg": "不存在的路径，请重新输入。"
