@@ -2,7 +2,6 @@
 import json
 import os
 import re
-import shutil
 
 from madliar.http.response import HttpResponse
 
@@ -118,7 +117,12 @@ def login_required(func):
 
 
 def get_file_type(ex_name):
-    return ""
+    if not ex_name or ex_name.lower() in "txt text ini conf yml".split(" "):
+        return "text"
+    elif ex_name.lower() in "md markdown":
+        return "md"
+    else:
+        return "bin"
 
 
 fs_coding = "gbk" if os.name in ("nt", ) else "utf-8"
@@ -132,7 +136,7 @@ def get_file_list(request):
     :param request:
     :return: json data:
         :id     ->    full path
-        :type   ->    folder, bin, text
+        :type   ->    folder, bin, text, md
 
     """
     node_id = request.POST.get("id")
@@ -291,7 +295,134 @@ def rm(request):
             })
     full_path = os.path.join(app_notebook_path, path)
     try:
-        shutil.rmtree(full_path)
+        if os.path.isfile(full_path):
+            os.remove(full_path)
+        else:
+            os.rmdir(full_path)
+    except Exception as e:
+        print e
+        # TODO: add log
+        return json_to_response({
+            "err_code": 500,
+            "err_msg": "服务器内部错误。"
+        })
+
+    return json_to_response({"err_code": 0})
+
+
+@supported_action(action="rename")
+@login_required
+def rename(request):
+    node_id = request.POST.get("node_id")
+    email = request.COOKIES.get("email")
+    if node_id.split("/")[0] != email:
+        return json_to_response({
+            "err_code": 403,
+            "err_msg": "路径不存在，请稍后再试。"
+        })
+    if node_id == email:
+        return json_to_response({
+            "err_code": 403,
+            "err_msg": "根目录禁止修改！"
+        })
+
+    path = node_id
+    if type(path) != unicode:
+        try:
+            path = path.decode("utf-8")
+        except Exception:
+            return json_to_response({
+                "err_code": 403,
+                "err_msg": "错误的编码格式。"
+            })
+    if os.name in ("nt", ):
+        path = "\\".join(path.split("/"))
+
+    src_path = os.path.join(app_notebook_path, path)
+    if not os.path.exists(src_path):
+        return json_to_response({
+            "err_code": 403,
+            "err_msg": "找不到源目录。"
+        })
+
+    new_name = request.POST.get("new_name")
+    if type(new_name) != unicode:
+        try:
+            new_name = new_name.decode("utf-8")
+        except Exception:
+            return json_to_response({
+                "err_code": 403,
+                "err_msg": "错误的编码格式。"
+            })
+    new_path = os.path.join(os.path.split(src_path)[0], new_name)
+    if os.path.exists(new_path):
+        return json_to_response({
+            "err_code": 403,
+            "err_msg": "新的目录已经存在。"
+        })
+
+    try:
+        os.rename(src_path, new_path)
+    except Exception as e:
+        # TODO: add log
+        return json_to_response({
+            "err_code": 500,
+            "err_msg": "服务器内部错误。"
+        })
+
+    return json_to_response({"err_code": 0})
+
+
+@supported_action(action="new")
+@login_required
+def newfile(request):
+    node_id = request.POST.get("node_id")
+    email = request.COOKIES.get("email")
+    if node_id.split("/")[0] != email:
+        return json_to_response({
+            "err_code": 403,
+            "err_msg": "路径不存在，请稍后再试。"
+        })
+
+    path = node_id
+    if type(path) != unicode:
+        try:
+            path = path.decode("utf-8")
+        except Exception:
+            return json_to_response({
+                "err_code": 403,
+                "err_msg": "错误的编码格式。"
+            })
+    if os.name in ("nt", ):
+        path = "\\".join(path.split("/"))
+
+    full_path = os.path.join(app_notebook_path, path)
+    if not os.path.exists(full_path):
+        return json_to_response({
+            "err_code": 403,
+            "err_msg": "目录不存在！"
+        })
+
+    file_name = request.POST.get("file_name")
+    if type(file_name) != unicode:
+        try:
+            file_name = file_name.decode("utf-8")
+        except Exception:
+            return json_to_response({
+                "err_code": 403,
+                "err_msg": "错误的编码格式。"
+            })
+
+    full_file_path = os.path.join(full_path, file_name)
+    if os.path.exists(full_file_path):
+        return json_to_response({
+            "err_code": 403,
+            "err_msg": "新的文件已经存在。"
+        })
+    print "full_file_path: %s" % full_file_path
+    try:
+        with open(full_file_path, "w"):
+            pass
     except Exception as e:
         # TODO: add log
         return json_to_response({

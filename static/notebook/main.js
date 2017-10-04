@@ -1,6 +1,11 @@
 $.cl = {
-    fileIcon: "/static/img/jstree/file.png",
-    folderIcon: "/static/img/jstree/folder.png",
+    jstreeTypes: {
+        bin: {icon: "/static/img/jstree/bin.png"},
+        text: {icon: "/static/img/jstree/file.png"},
+        md: {icon: "/static/img/jstree/file.png"},
+        folder: {icon: "/static/img/jstree/folder.png"},
+        default: {icon: "/static/img/jstree/folder.png"}
+    },
     setCookie: function (key, value, expiredays){
         var exdate=new Date();
         exdate.setDate(exdate.getDate() + expiredays);
@@ -140,6 +145,27 @@ $.cl = {
             }
         })
     },
+    rm: function (nodeId){
+        $.ajax({
+            url: "/notebook/api",
+            type: "post",
+            data: {
+                action: "rm",
+                node_id: nodeId
+            },
+            success: function (data){
+                if(data.err_code === 0){
+                    $.cl.popupMessage("删除成功！", null, 3)
+                    $("#jstree").jstree().refresh_node(nodeId.split("/").slice(0, -1).join("/"));
+                }else{
+                    $.cl.popupMessage("删除失败：" + data.err_msg);
+                }
+            },
+            error: function(e){
+                $.cl.popupMessage("操作失败，请检查你的网络连接。");
+            }
+        });
+    },
     showMkdirDialog: function(nodeId){
         $("#mkdir-confirm-btn").data("nodeId", nodeId).off("click").click(function(){
             $("#mkdir-modal").modal("hide");
@@ -170,69 +196,162 @@ $.cl = {
                 }
             });
         });
+        $("#mkdir-title").html("新建文件夹");
+        $("#mkdir-prompt-body").html([
+            '<label>新的文件夹名称: <input class="redinput" type="text" name="folder-name"/></label>'
+        ].join(""));
         $("#mkdir-modal").modal("show");
     },
-    rm: function (nodeId){
-        $.ajax({
-            url: "/notebook/api",
-            type: "post",
-            data: {
-                action: "rm",
-                node_id: nodeId
-            },
-            success: function (data){
-                if(data.err_code === 0){
-                    $.cl.popupMessage("删除成功！", null, 3)
-                    $("#jstree").jstree().refresh_node(nodeId.split("/").slice(0, -1).join("/"));
-                }else{
-                    $.cl.popupMessage("删除失败：" + data.err_msg);
-                }
-            },
-            error: function(e){
-                $.cl.popupMessage("操作失败，请检查你的网络连接。");
+    showRenameDialog: function (nodeId, isdir){
+        $("#mkdir-confirm-btn").data("nodeId", nodeId).off("click").click(function(){
+            $("#mkdir-modal").modal("hide");
+            var nodeId = $(this).data("nodeId"),
+                dirName = $("input[name=folder-name]").val();
+            if (!dirName.match(/^[\.a-zA-Z0-9_\u4e00-\u9fa5]+$/)){
+                $.cl.popupConfirm("仅允许包含数字、字母、下划线以及汉字，不支持其它字符。请返回修改。", null, false, "名称有误");
+                return false;
             }
+            $.ajax({
+                url: "/notebook/api",
+                type: "post",
+                data: {
+                    action: "rename",
+                    node_id: nodeId,
+                    new_name: dirName
+                },
+                success: function (data){
+                    if(data.err_code === 0){
+                        $.cl.popupMessage("重命名成功！", null, 3);
+                        $("#jstree").jstree().refresh_node(nodeId.split("/").slice(0, -1).join("/"));
+                    }else{
+                        $.cl.popupMessage("重命名失败：" + data.err_msg);
+                    }
+                },
+                error: function(e){
+                    $.cl.popupMessage("操作失败，请检查你的网络连接。");
+                }
+            });
         });
+        $("#mkdir-title").html(isdir ? "重命名文件夹" : "重命名文件");
+        $("#mkdir-prompt-body").html([
+            '<p style="text-align: center">将“' + nodeId.split("/").slice(-1) + '”重新命名。</p>',
+            '<label>新的名称: <input class="redinput" type="text" name="folder-name"/></label>'
+        ].join(""));
+        $("#mkdir-modal").modal("show");
+    },
+    showNewFileDialog: function (nodeId){
+        $("#mkdir-confirm-btn").data("nodeId", nodeId).off("click").click(function(){
+            $("#mkdir-modal").modal("hide");
+            var nodeId = $(this).data("nodeId"),
+                fileName = $("input[name=folder-name]").val();
+            if (!fileName.match(/^[\.a-zA-Z0-9_\u4e00-\u9fa5]+$/)){
+                $.cl.popupConfirm("仅允许包含数字、字母、下划线以及汉字，不支持其它字符。请返回修改。", null, false, "名称有误");
+                return false;
+            }
+            $.ajax({
+                url: "/notebook/api",
+                type: "post",
+                data: {
+                    action: "new",
+                    node_id: nodeId,
+                    file_name: fileName
+                },
+                success: function (data){
+                    if(data.err_code === 0){
+                        $.cl.popupMessage("创建成功！", null, 3);
+                        $("#jstree").jstree().refresh_node(nodeId);
+                    }else{
+                        $.cl.popupMessage("创建失败：" + data.err_msg);
+                    }
+                },
+                error: function(e){
+                    $.cl.popupMessage("操作失败，请检查你的网络连接。");
+                }
+            });
+        });
+        $("#mkdir-title").html("新建文件");
+        $("#mkdir-prompt-body").html([
+            '<p>新建一个文档。系统根据文件扩展名判断文件类型，如果你填写二进制文件的文件类型，将不能对该文件进行编辑。',
+            '这是一个示例： readme.md 。',
+            '</p>',
+            '<label>新的文件名: <input class="redinput" type="text" name="folder-name"/></label>'
+        ].join(""));
+        $("#mkdir-modal").modal("show");
+    },
+    openFile: function (nodeId){
+        console.log("openFile nodeId: ", nodeId);
     },
     renderJstreeContextMenu: function(node){
         console.log("ContextMenu node: ", node);
         var selectedNodeId = node.id;
-        if (node.type === "folder"){
-            return {
-                "mkdir": {
-                    "label": "新建文件夹",
-                    "action": function(){$.cl.showMkdirDialog(selectedNodeId)}
-                },
-                "rm": {
-                    "label": "删除",
-                    "action": function() {
-                        $.cl.popupConfirm(
-                            "确定要删除“" + selectedNodeId + "”？",
-                            function () {
-                                $.cl.rm(selectedNodeId)
-                            },
-                            undefined,
-                            "删除文件夹"
-                        )
+        return node.type === "folder" ?
+        {
+            "new": {
+                "label": "新建文档",
+                "action": function () {
+                    $.cl.showNewFileDialog(selectedNodeId);
+                }
+            },
+            "mkdir": {
+                "label": "新建文件夹",
+                "action": function(){$.cl.showMkdirDialog(selectedNodeId)}
+            },
+            "rm": {
+                "label": "删除",
+                "action": function() {
+                    $.cl.popupConfirm(
+                        "确定要删除“" + selectedNodeId + "”？",
+                        function () {
+                            $.cl.rm(selectedNodeId)
+                        },
+                        undefined,
+                        "删除文件夹"
+                    )
+                }
+            },
+            "rename": {
+                "label": "重命名",
+                "action": function () {
+                    $.cl.showRenameDialog(selectedNodeId, true);
+                }
+            }
+        } : {
+            "open": {
+                "label": "打开",
+                "action": function () {
+                    if(node.type === "text"){
+                        $.cl.openFile(selectedNodeId);
+                    }else{
+                        $.cl.popupConfirm("不支持打开二进制文件。", null, false)
                     }
-                },
-                "rename": {
-                    "label": "重命名",
-                    "action": function (data) {
-                        var nodeId = data.reference[0].id;
-                        console.log("nodeId: ", nodeId)
-                    }
+                }
+            },
+            "rename": {
+                "label": "重命名",
+                "action": function () {
+                    $.cl.showRenameDialog(selectedNodeId);
+                }
+            },
+            "rm": {
+                "label": "删除",
+                "action": function() {
+                    $.cl.popupConfirm(
+                        "确定要删除“" + selectedNodeId + "”？",
+                        function () {
+                            $.cl.rm(selectedNodeId)
+                        },
+                        undefined,
+                        "删除文件"
+                    )
+                }
+            },
+            "share": {
+                "label": "分享",
+                "action": function(){
+                    // $.cl.showMkdirDialog(selectedNodeId)
                 }
             }
         }
-        return {
-            s: {
-                "label": "详细信息",
-                "action": function (data) {
-                    var nodeId = data.reference[0].id;
-                    console.log("nodeId: ", nodeId)
-                }
-            }
-        };
     },
     getAndRenderDefaultFileListAndPage: function(){
         var jstreeInstance = $("#jstree");
@@ -248,16 +367,12 @@ $.cl = {
                     state: {opened: true},
                     children: [{
                         text: "简介",
-                        type: "file",
+                        type: "text",
                         state: {opened: true, selected: true}
                     }]
                 }]
             },
-            types: {
-                file: {icon: $.cl.fileIcon},
-                folder: {icon: $.cl.folderIcon},
-                default: {icon: $.cl.folderIcon}
-            },
+            types: $.cl.jstreeTypes,
             contextmenu: {
                 select_node: false,
                 items: $.cl.renderJstreeContextMenu
@@ -285,11 +400,7 @@ $.cl = {
                     }
                 }
             },
-            types: {
-                file: {icon: $.cl.fileIcon},
-                folder: {icon: $.cl.folderIcon},
-                default: {icon: $.cl.folderIcon}
-            },
+            types: $.cl.jstreeTypes,
             contextmenu: {
                 select_node: false,
                 items: $.cl.renderJstreeContextMenu
