@@ -9,7 +9,6 @@
  */
 .jstree-contextmenu{
     margin: 0;
-    position: absolute;
     background: #ffffff;
 }
 .vakata-context .vakata-context-hover>a, .vakata-context-hover li:focus, .vakata-context-hover li>a:hover, .vakata-context li>a:hover{

@@ -2,6 +2,7 @@
 import json
 import os
 import re
+import shutil
 
 from madliar.http.response import HttpResponse
 
@@ -78,11 +79,17 @@ def regist(request):
         return json_to_response({"err_code": 403, "err_msg": u"密码过长或过短。"})
 
     result, token = dao.regist(email, password)
-    response = json_to_response({
+    response_data = {
         "err_code": 0 if isinstance(token, (str, unicode)) and len(token) == 64 else 403,
         "token" if result else "err_msg": token,
         "email": email,
-    })
+    }
+    if response_data.get("err_code") == 0:
+        app_notebook_path = APP_NOTE_BOOK_CONFIG.get("user_root_foler")
+        user_root_floder = os.path.join(app_notebook_path, email)
+        os.mkdir(user_root_floder)
+
+    response = json_to_response(response_data)
     return response
 
 
@@ -113,6 +120,9 @@ def get_file_type(ex_name):
     return ""
 
 
+fs_coding = "gbk" if os.name in ("nt", ) else "utf-8"
+
+
 @supported_action(action="get_file_list")
 @login_required
 def get_file_list(request):
@@ -125,10 +135,13 @@ def get_file_list(request):
 
     """
     node_id = request.POST.get("id")
+    if type(node_id) != unicode:
+        node_id = node_id.decode("utf-8")
+
     email = request.COOKIES.get("email")
     if node_id == "#":
         response = [{
-            "id": ".",
+            "id": email,
             "type": "folder",
             "text": email,
             "children": True
@@ -136,18 +149,25 @@ def get_file_list(request):
         return json_to_response(response)
 
     app_root_folder = APP_NOTE_BOOK_CONFIG.get("user_root_foler")
-    user_root_foler = os.path.join(app_root_folder, email)
-    path = os.path.join(user_root_foler, node_id)
+    if node_id.split("/")[0] != email:
+        # 沒有权限
+        return json_to_response([])
+
+    path = os.path.join(app_root_folder, node_id)
     if not os.path.isdir(path):
         return json_to_response([])
 
     children = os.listdir(path)
     data = []
     for child in children:
+        if type(child) != unicode:
+            child = child.decode(fs_coding)
+
         this_node_path = os.path.join(path, child)
         if os.path.isdir(this_node_path):
             data.append({
-                "id": os.path.join(node_id, child),
+                # 强制用“/”分割文件路径
+                "id": "/".join(os.path.split(os.path.join(node_id, child))),
                 "type": "folder",
                 "text": child,
                 "children": True,
@@ -155,7 +175,7 @@ def get_file_list(request):
         if os.path.isfile(this_node_path):
             file_ex_name = os.path.splitext(child)[1].lstrip(".")
             data.append({
-                "id": os.path.join(node_id, child),
+                "id": "/".join(os.path.split(os.path.join(node_id, child))),
                 "type": get_file_type(file_ex_name),
                 "text": child,
             })
@@ -173,7 +193,108 @@ def check_path_string_is_avaliable(text):
     return bool(re.match(u"^[a-zA-Z0-9_\u4e00-\u9fa5]+$", text))
 
 
-@supported_action(action="make_dir")
+@supported_action(action="mkdir")
 @login_required
-def make_dir(request):
+def mkdir(request):
+    node_id = request.POST.get("node_id")
+    email = request.COOKIES.get("email")
+    if node_id.split("/")[0] != email:
+        return json_to_response({
+            "err_code": 403,
+            "err_msg": "你没有权限在此创建目录。"
+        })
+
+    elif len(node_id.split("/")) > 9:
+        return json_to_response({
+            "err_code": 403,
+            "err_msg": "目录层级过深，不支持继续创建。"
+        })
+
+    if os.name in ("nt", ):
+        node_id = "\\".join(node_id.split("/"))
+    if type(node_id) != unicode:
+        try:
+            node_id = node_id.decode("utf-8")
+        except Exception:
+            return json_to_response({
+                "err_code": 403,
+                "err_msg": "错误的编码格式。"
+            })
+
+    dir_name = request.POST.get("dir_name")
+    if type(dir_name) != unicode:
+        try:
+            dir_name = dir_name.decode("utf-8")
+        except Exception:
+            return json_to_response({
+                "err_code": 403,
+                "err_msg": "错误的编码格式。"
+            })
+
+    if not os.path.isdir(node_id):
+        return json_to_response({
+            "err_code": 403,
+            "err_msg": "不存在的路径，请重新输入。"
+        })
+
+    if not check_path_string_is_avaliable(dir_name):
+        return json_to_response({
+            "err_code": 403,
+            "err_msg": "名称中含有特殊字符，请重新输入。"
+        })
+
+    folder_path = os.path.join(node_id, dir_name)
+    if os.path.exists(folder_path):
+        return json_to_response({
+            "err_code": 403,
+            "err_msg": "目录已经存在。"
+        })
+    try:
+        os.mkdir(folder_path)
+    except Exception as e:
+        # TODO: add log
+        return json_to_response({
+            "err_code": 500,
+            "err_msg": "服务器内部错误。"
+        })
+
+    return json_to_response({"err_code": 0})
+
+
+@supported_action(action="rm")
+@login_required
+def rm(request):
+    node_id = request.POST.get("node_id")
+    email = request.COOKIES.get("email")
+    if node_id.split("/")[0] != email:
+        return json_to_response({
+            "err_code": 403,
+            "err_msg": "你没有权限在此创建目录。"
+        })
+    if node_id == email:
+        return json_to_response({
+            "err_code": 403,
+            "err_msg": "根目录无法删除！"
+        })
+
+    path = node_id
+    if os.name in ("nt", ):
+        path = "\\".join(path.split("/"))
+    if type(path) != unicode:
+        try:
+            path = path.decode("utf-8")
+        except Exception:
+            return json_to_response({
+                "err_code": 403,
+                "err_msg": "错误的编码格式。"
+            })
+    try:
+        shutil.rmtree(path)
+    except Exception as e:
+        # TODO: add log
+        return json_to_response({
+            "err_code": 500,
+            "err_msg": "服务器内部错误。"
+        })
+
     return json_to_response({"err_code": 0})

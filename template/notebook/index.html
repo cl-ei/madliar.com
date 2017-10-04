@@ -49,6 +49,20 @@
         <div class="cl-prompt-header"><h4 id="cl-prompt-title"></h4></div>
         <div class="cl-prompt-body"><p id="cl-prompt-content"></p></div>
     </div>
+    <div class="modal fade" id="cl-confirm" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 id="cl-confirm-title">提示</h4>
+                </div>
+                <div class="modal-body" style="text-align: center;">
+                    <p id="cl-confirm-body">确定要继续吗？</p>
+                    <button class="button center" id="cl-confirm-cnf-btn">确定</button>
+                    <button class="button center" id="cl-confirm-ccl-btn">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="modal fade" id="login-modal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -64,6 +78,21 @@
                         <label>密码: <input class="redinput" type="password" name="password"/></label>
                     </div>
                     <button class="button center" id="login-btn">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="mkdir-modal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4>新建文件夹</h4>
+                </div>
+                <div class="modal-body" style="text-align: center;">
+                    <div>
+                        <label>文件夹名称: <input class="redinput" type="text" name="folder-name"/></label>
+                    </div>
+                    <button class="button center" id="mkdir-confirm-btn">确定</button>
                 </div>
             </div>
         </div>
