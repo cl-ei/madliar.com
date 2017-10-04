@@ -231,7 +231,8 @@ def mkdir(request):
                 "err_msg": "错误的编码格式。"
             })
 
-    if not os.path.isdir(os.path.join(app_notebook_path, node_id)):
+    user_root_path = os.path.join(app_notebook_path, node_id)
+    if not os.path.isdir(user_root_path):
         return json_to_response({
             "err_code": 403,
             "err_msg": "不存在的路径，请重新输入。"
@@ -243,7 +244,7 @@ def mkdir(request):
             "err_msg": "名称中含有特殊字符，请重新输入。"
         })
 
-    folder_path = os.path.join(node_id, dir_name)
+    folder_path = os.path.join(user_root_path, dir_name)
     if os.path.exists(folder_path):
         return json_to_response({
             "err_code": 403,
