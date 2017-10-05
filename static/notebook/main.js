@@ -426,6 +426,9 @@ $.cl = {
                 $.cl.openFile(localStorage.currentDocument);
             }
         }).on("select_node.jstree", function (e, node){
+            if (!(node.node.type === "text" || node.node.type === "md")){
+                return ;
+            }
             var selectedNodeId = node.node.id;
             if (localStorage.currentDocument !== selectedNodeId){
                 $.cl.openFile(selectedNodeId);
@@ -620,3 +623,12 @@ $.cl = {
     preventDefault: function (e){e.preventDefault()}
 };
 $(window).resize($.cl.windowSizeMonitor).on("ready", $.cl.windowSizeMonitor);$($.cl.initPage);
+
+
+/*
+ * TODO:
+ * 1、文件夹重命名后，下方的文档没有即时更新。
+ * 2、提示框倒计时。
+ * 3、上传文件功能。
+ *
+ */
