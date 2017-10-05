@@ -178,11 +178,11 @@ input{
     overflow: auto;
     height: 100%;
 }
-#mkdir-modal .modal-body{
+#input-modal .modal-body{
     margin-left: 20%;
     width: 60%;
 }
-#mkdir-modal .modal-body p{
+#input-modal .modal-body p{
     text-align: left;
 }
 @media (max-width: 9999px) {

@@ -70,17 +70,19 @@ $.cl = {
         $("#cl-confirm").modal("show");
     },
     onLoginOrRegisted: function (data){
-        if(data.err_code != 0){
+        if(data.err_code !== 0){
             var msg = "操作失败。详细信息：" + data.err_msg;
             $.cl.popupMessage(msg);
             return ;
         }
         $.cl.setCookie("madToken", data.token);
         $.cl.setCookie("email", data.email);
-        window.contextData.loginInfo = {
-            email: data.email
-        };
+        window.contextData.loginInfo = {email: data.email};
         $.cl.renderLoginPage();
+    },
+    sendRequest: function (data, callback, fallback){
+        fallback = fallback || function(){$.cl.popupMessage("操作失败，请检查你的网络连接。")};
+        $.ajax({url: "/notebook/api", type: "post", data: data, success: callback, error: fallback});
     },
     login: function (){
         var email = $("input[name=email]").val(),
@@ -89,40 +91,19 @@ $.cl = {
             $.cl.popupMessage("请输入正确的邮箱和密码。");
             return ;
         }
-        $.ajax({
-            url: "/notebook/api",
-            type: "post",
-            data: {
-                action: "login",
-                email: email,
-                password: password
-            },
-            success: $.cl.onLoginOrRegisted,
-            error: function(e){
-                $.cl.popupMessage("操作失败，请检查你的网络连接。");
-            }
-        })
+        $.cl.sendRequest({action: "login", email: email, password: password}, $.cl.onLoginOrRegisted);
     },
     logout: function (){
-        $.ajax({
-            url: "/notebook/api",
-            type: "post",
-            data: {
-                action: "logout"
-            },
-            success: function(data){
-                if(data.err_code != 0){
-                    var msg = "操作失败。详细信息：" + data.err_msg;
-                    $.cl.popupMessage(msg);
-                    return ;
-                }
-                window.contextData.loginInfo = false;
-                $.cl.renderUnloginPage();
-            },
-            error: function(e){
-                $.cl.popupMessage("操作失败，请检查你的网络连接。");
+        var afterLogOut = function (data){
+            if(data.err_code !== 0){
+                var msg = "操作失败。详细信息：" + data.err_msg;
+                $.cl.popupMessage(msg);
+                return ;
             }
-        })
+            window.contextData.loginInfo = false;
+            $.cl.renderUnloginPage();
+        };
+        $.cl.sendRequest({action: "logout"}, afterLogOut);
     },
     regist: function (){
         var email = $("input[name=email]").val(),
@@ -131,158 +112,106 @@ $.cl = {
             $.cl.popupMessage("请输入正确的邮箱和密码。");
             return ;
         }
-        $.ajax({
-            url: "/notebook/api",
-            type: "post",
-            data: {
-                action: "regist",
-                email: email,
-                password: password
-            },
-            success: $.cl.onLoginOrRegisted,
-            error: function(e){
-                $.cl.popupMessage("操作失败，请检查你的网络连接。");
-            }
-        })
+        $.cl.sendRequest({action: "regist", email: email, password: password}, $.cl.onLoginOrRegisted);
     },
     rm: function (nodeId){
-        $.ajax({
-            url: "/notebook/api",
-            type: "post",
-            data: {
-                action: "rm",
-                node_id: nodeId
-            },
-            success: function (data){
-                if(data.err_code === 0){
-                    $.cl.popupMessage("删除成功！", null, 3)
-                    $("#jstree").jstree().refresh_node(nodeId.split("/").slice(0, -1).join("/"));
-                }else{
-                    $.cl.popupMessage("删除失败：" + data.err_msg);
-                }
-            },
-            error: function(e){
-                $.cl.popupMessage("操作失败，请检查你的网络连接。");
+        var afterRmSucceed = function (data){
+            if(data.err_code === 0){
+                $.cl.popupMessage("删除成功！", null, 3)
+                $("#jstree").jstree().refresh_node(nodeId.split("/").slice(0, -1).join("/"));
+            }else{
+                $.cl.popupMessage("删除失败：" + data.err_msg);
             }
-        });
+        };
+        $.cl.sendRequest({action: "rm", node_id: nodeId}, afterRmSucceed)
     },
     showMkdirDialog: function(nodeId){
-        $("#mkdir-confirm-btn").data("nodeId", nodeId).off("click").click(function(){
-            $("#mkdir-modal").modal("hide");
+        var onMkdirDialogConfirmBtnClicked = function (){
+            $("#input-modal").modal("hide");
             var nodeId = $(this).data("nodeId"),
                 dirName = $("input[name=folder-name]").val();
             if (!dirName.match(/^[\.a-zA-Z0-9_\u4e00-\u9fa5]+$/)){
                 $.cl.popupConfirm("文件名仅允许包含数字、字母、下划线以及汉字，不支持其它字符。请返回修改。", null, false, "文件名有误");
-                return false;
+                return;
             }
-            $.ajax({
-                url: "/notebook/api",
-                type: "post",
-                data: {
-                    action: "mkdir",
-                    node_id: nodeId,
-                    dir_name: dirName
-                },
-                success: function (data){
-                    if(data.err_code === 0){
-                        $.cl.popupMessage("创建成功！", null, 3);
-                        $("#jstree").jstree().refresh_node(nodeId);
-                    }else{
-                        $.cl.popupMessage("创建失败：" + data.err_msg);
-                    }
-                },
-                error: function(e){
-                    $.cl.popupMessage("操作失败，请检查你的网络连接。");
+            var onMkdirResponsed = function (data){
+                if(data.err_code === 0){
+                    $.cl.popupMessage("创建成功！", null, 3);
+                    $("#jstree").jstree().refresh_node(nodeId);
+                }else{
+                    $.cl.popupMessage("创建失败：" + data.err_msg);
                 }
-            });
-        });
-        $("#mkdir-title").html("新建文件夹");
-        $("#mkdir-prompt-body").html([
-            '<label>新的文件夹名称: <input class="redinput" type="text" name="folder-name"/></label>'
-        ].join(""));
-        $("#mkdir-modal").modal("show");
+            };
+            $.cl.sendRequest({action: "mkdir", node_id: nodeId, dir_name: dirName}, onMkdirResponsed)
+        };
+        $("#input-modal-confirm-btn").data("nodeId", nodeId).off("click").click(onMkdirDialogConfirmBtnClicked);
+        $("#input-modal-title").html("新建文件夹");
+        $("#input-modal-body").html('<label>新的文件夹名称: <input class="redinput" type="text" name="folder-name"/></label>');
+        $("input[name=folder-name]").keyup(function(e){if(e.keyCode === 13)$("#input-modal-confirm-btn").trigger("click");});
+        $("#input-modal").modal("show");
     },
     showRenameDialog: function (nodeId, isdir){
-        $("#mkdir-confirm-btn").data("nodeId", nodeId).off("click").click(function(){
-            $("#mkdir-modal").modal("hide");
+        var onConfirmBtnClicked = function (){
+            $("#input-modal").modal("hide");
             var nodeId = $(this).data("nodeId"),
                 dirName = $("input[name=folder-name]").val();
             if (!dirName.match(/^[\.a-zA-Z0-9_\u4e00-\u9fa5]+$/)){
                 $.cl.popupConfirm("仅允许包含数字、字母、下划线以及汉字，不支持其它字符。请返回修改。", null, false, "名称有误");
                 return false;
             }
-            $.ajax({
-                url: "/notebook/api",
-                type: "post",
-                data: {
-                    action: "rename",
-                    node_id: nodeId,
-                    new_name: dirName
-                },
-                success: function (data){
-                    if(data.err_code === 0){
-                        $.cl.popupMessage("重命名成功！", null, 3);
-                        $("#jstree").jstree().refresh_node(nodeId.split("/").slice(0, -1).join("/"));
-                    }else{
-                        $.cl.popupMessage("重命名失败：" + data.err_msg);
-                    }
-                },
-                error: function(e){
-                    $.cl.popupMessage("操作失败，请检查你的网络连接。");
+            var onRenameResponsed = function (data){
+                if(data.err_code === 0){
+                    $.cl.popupMessage("重命名成功！", null, 3);
+                    $("#jstree").jstree().refresh_node(nodeId.split("/").slice(0, -1).join("/"));
+                }else{
+                    $.cl.popupMessage("重命名失败：" + data.err_msg);
                 }
-            });
-        });
-        $("#mkdir-title").html(isdir ? "重命名文件夹" : "重命名文件");
-        $("#mkdir-prompt-body").html([
+            };
+            $.cl.sendRequest({action: "rename", node_id: nodeId, new_name: dirName}, onRenameResponsed);
+        };
+        $("#input-modal-confirm-btn").data("nodeId", nodeId).off("click").click(onConfirmBtnClicked);
+        $("#input-modal-title").html(isdir ? "重命名文件夹" : "重命名文件");
+        $("#input-modal-body").html([
             '<p style="text-align: center">将“' + nodeId.split("/").slice(-1) + '”重新命名。</p>',
             '<label>新的名称: <input class="redinput" type="text" name="folder-name"/></label>'
         ].join(""));
-        $("#mkdir-modal").modal("show");
+        $("input[name=folder-name]").keyup(function(e){if(e.keyCode === 13)$("#input-modal-confirm-btn").trigger("click");});
+        $("#input-modal").modal("show");
     },
     showNewFileDialog: function (nodeId){
-        $("#mkdir-confirm-btn").data("nodeId", nodeId).off("click").click(function(){
-            $("#mkdir-modal").modal("hide");
+        var onConfirmBtnClicked = function (){
+            $("#input-modal").modal("hide");
             var nodeId = $(this).data("nodeId"),
                 fileName = $("input[name=folder-name]").val();
             if (!fileName.match(/^[\.a-zA-Z0-9_\u4e00-\u9fa5]+$/)){
                 $.cl.popupConfirm("仅允许包含数字、字母、下划线以及汉字，不支持其它字符。请返回修改。", null, false, "名称有误");
                 return false;
             }
-            $.ajax({
-                url: "/notebook/api",
-                type: "post",
-                data: {
-                    action: "new",
-                    node_id: nodeId,
-                    file_name: fileName
-                },
-                success: function (data){
-                    if(data.err_code === 0){
-                        $.cl.popupMessage("创建成功！", null, 3);
-                        $("#jstree").jstree().refresh_node(nodeId);
-                    }else{
-                        $.cl.popupMessage("创建失败：" + data.err_msg);
-                    }
-                },
-                error: function(e){
-                    $.cl.popupMessage("操作失败，请检查你的网络连接。");
+            var onNewFileResponsed = function (data){
+                if(data.err_code === 0){
+                    $.cl.popupMessage("创建成功！", null, 3);
+                    $("#jstree").jstree().refresh_node(nodeId);
+                }else{
+                    $.cl.popupMessage("创建失败：" + data.err_msg);
                 }
-            });
-        });
-        $("#mkdir-title").html("新建文件");
-        $("#mkdir-prompt-body").html([
+            };
+            $.cl.sendRequest({action: "new", node_id: nodeId, file_name: fileName}, onNewFileResponsed);
+        };
+        $("#input-modal-confirm-btn").data("nodeId", nodeId).off("click").click(onConfirmBtnClicked);
+        $("#input-modal-title").html("新建文件");
+        $("#input-modal-body").html([
             '<p>新建一个文档。系统根据文件扩展名判断文件类型，如果你填写二进制文件的文件类型，将不能对该文件进行编辑。',
             '这是一个示例： readme.md 。',
             '</p>',
             '<label>新的文件名: <input class="redinput" type="text" name="folder-name"/></label>'
         ].join(""));
-        $("#mkdir-modal").modal("show");
+        $("input[name=folder-name]").keyup(function(e){if(e.keyCode === 13)$("#input-modal-confirm-btn").trigger("click");});
+        $("#input-modal").modal("show");
     },
     openFile: function (nodeId){
         console.log("openFile nodeId: ", nodeId);
     },
     renderJstreeContextMenu: function(node){
-        console.log("ContextMenu node: ", node);
         var selectedNodeId = node.id;
         return node.type === "folder" ?
         {
@@ -375,7 +304,7 @@ $.cl = {
             types: $.cl.jstreeTypes,
             contextmenu: {
                 select_node: false,
-                items: $.cl.renderJstreeContextMenu
+                items: {}
             },
             plugins: ["contextmenu", "types"]
         });
@@ -422,12 +351,11 @@ $.cl = {
             '<a href="javascript:void(0)" id="save-btn"><i class="fa fa-save" aria-hidden="true"></i> 保存</a>'
         ].join("");
         $("#top-dynamic-nav").html(leftNavHtml);
+        $("#save-btn").off("click").click($.cl.saveContent);
         $.cl.getAndRenderLoginedFileListAndPage();
         document.getElementById("jstree").addEventListener("drop", $.cl.onDropFileToJsTree, false);
     },
-    releasePageResource: function (){
-
-    },
+    releasePageResource: function (){},
     renderUnloginPage: function (){
         $.cl.releasePageResource();
         var navHtml = [
@@ -447,6 +375,18 @@ $.cl = {
             return $("#login-or-regist").html() === "注册" ? $.cl.regist() : $.cl.login();
         });
         $.cl.getAndRenderDefaultFileListAndPage();
+    },
+    currentDocument: undefined,
+    onSaveContent: false,
+    saveContent: function (){
+        console.log("saveContent");
+        var content = $("#input-text-area").val();
+        if (!content.trim(" \n\r\t")) return;
+        if ($.cl.onSaveContent) return;
+        if (!$.cl.currentDocument){
+            $("#mkdir-modal")
+        }
+        console.log(content);
     },
     daemonToTransMdId: undefined,
     oldContent: undefined,
@@ -522,8 +462,32 @@ $.cl = {
             clearInterval($.cl.daemonToTransMdId);
         }
         $.cl.daemonToTransMdId = $.cl.daemonToTransMd();
+        /*
+         * drag event
+         * ctrl key event
+         * tab key event
+         */
+        $(document).on({
+            dragleave: $.cl.preventDefault,
+            drop: $.cl.preventDefault,
+            dragenter: $.cl.preventDefault,
+            dragover: $.cl.preventDefault,
+            keydown: function(event){
+                /*
+                if(window.event.keyCode == 9){
+                    if($("#input-text-area").is(":focus")){
+                        event.preventDefault();
+                        insertStr("\t");
+                    }
+                    return ;
+                }*/
+                if(event.ctrlKey  &&  event.keyCode === 83){
+                    event.preventDefault();
+                    $("#save-btn").trigger("click");
+                }
+            }
+        })
     },
     preventDefault: function (e){e.preventDefault()}
 };
 $(window).resize($.cl.windowSizeMonitor).on("ready", $.cl.windowSizeMonitor);$($.cl.initPage);
-$(document).on({dragleave: $.cl.preventDefault, drop: $.cl.preventDefault, dragenter: $.cl.preventDefault, dragover: $.cl.preventDefault});

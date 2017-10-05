@@ -118,7 +118,9 @@ def login_required(func):
 
 
 def get_file_type(ex_name):
-    if not ex_name or ex_name.lower() in "txt text ini conf yml".split(" "):
+    if not ex_name or ex_name.lower() in (
+        "txt", "text", "ini", "conf", "yml", "c", "cpp", "py", "json", "js"
+    ):
         return "text"
     elif ex_name.lower() in "md markdown":
         return "md"
@@ -195,7 +197,7 @@ def check_path_string_is_avaliable(text):
                 return False
         except UnicodeEncodeError:
             return False
-    return bool(re.match(u"^[a-zA-Z0-9_\u4e00-\u9fa5]+$", text))
+    return bool(re.match(u"^[\.a-zA-Z0-9_\u4e00-\u9fa5]+$", text))
 
 
 @supported_action(action="mkdir")
