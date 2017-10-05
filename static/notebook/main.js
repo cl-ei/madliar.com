@@ -80,9 +80,29 @@ $.cl = {
         window.contextData.loginInfo = {email: data.email};
         $.cl.renderLoginPage();
     },
+    onSaveContent: false,
+    onOpenFile: false,
     sendRequest: function (data, callback, fallback){
         fallback = fallback || function(){$.cl.popupMessage("操作失败，请检查你的网络连接。")};
-        $.ajax({url: "/notebook/api", type: "post", data: data, success: callback, error: fallback});
+        if (data.action !== "save"){
+            $.ajax({url: "/notebook/api", type: "post", data: data, success: callback, error: fallback});
+            return ;
+        }
+        if ($.cl.onSaveContent) return;
+        $.cl.onSaveContent = true;
+        $.ajax({
+            url: "/notebook/api",
+            type: "post",
+            data: data,
+            success: function (data){
+                $.cl.onSaveContent = false;
+                callback(data);
+            },
+            error: function (data) {
+                $.cl.onSaveContent = false;
+                fallback(data);
+            }
+        });
     },
     login: function (){
         var email = $("input[name=email]").val(),
@@ -101,6 +121,7 @@ $.cl = {
                 return ;
             }
             window.contextData.loginInfo = false;
+            $.cl.renderCurrentEditDocumentTitle();
             $.cl.renderUnloginPage();
         };
         $.cl.sendRequest({action: "logout"}, afterLogOut);
@@ -124,6 +145,17 @@ $.cl = {
             }
         };
         $.cl.sendRequest({action: "rm", node_id: nodeId}, afterRmSucceed)
+    },
+    openJstreeNode: function (nodeId){
+        var recursionOpenJstreeNode = function(nodeId, currentLayer){
+
+            currentLayer = currentLayer || 0;
+            currentLayer += 1;
+            $("#jstree").on("open_node.jstree", function(){
+                recursionOpenJstreeNode(nodeId, currentLayer);
+            }).jstree().open_node(nodeId.split("/").slice(0, currentLayer).join("/"))
+        };
+        recursionOpenJstreeNode(nodeId);
     },
     showMkdirDialog: function(nodeId){
         var onMkdirDialogConfirmBtnClicked = function (){
@@ -162,7 +194,12 @@ $.cl = {
             var onRenameResponsed = function (data){
                 if(data.err_code === 0){
                     $.cl.popupMessage("重命名成功！", null, 3);
-                    $("#jstree").jstree().refresh_node(nodeId.split("/").slice(0, -1).join("/"));
+                    var nodePath = nodeId.split("/").slice(0, -1).join("/");
+                    $("#jstree").jstree().refresh_node(nodePath);
+                    if (data.old_node_id === localStorage.currentDocument){
+                        localStorage.currentDocument = nodePath + "/" + dirName;
+                        $.cl.renderCurrentEditDocumentTitle();
+                    }
                 }else{
                     $.cl.popupMessage("重命名失败：" + data.err_msg);
                 }
@@ -208,8 +245,76 @@ $.cl = {
         $("input[name=folder-name]").keyup(function(e){if(e.keyCode === 13)$("#input-modal-confirm-btn").trigger("click");});
         $("#input-modal").modal("show");
     },
+    renderCurrentEditDocumentTitle: function (){
+        if(localStorage.currentDocument){
+            var jstreeInstence = $("#jstree").jstree();
+            jstreeInstence.deselect_all();
+            jstreeInstence.select_node(localStorage.currentDocument);
+            $("#input-text-area").prev().html("编辑 - " + localStorage.currentDocument);
+        }else{
+            $("#input-text-area").prev().html("编辑");
+        }
+    },
+    showSaveContentDialog: function (path, content){
+        var onConfirmBtnClicked = function (){
+            $("#input-modal").modal("hide");
+
+            var nodeId = $(this).data("nodeId"),
+                content = $(this).data("content"),
+                fileName = $("input[name=folder-name]").val();
+
+            if (!fileName.match(/^[\.a-zA-Z0-9_\u4e00-\u9fa5]+$/)){
+                $.cl.popupConfirm("仅允许包含数字、字母、下划线以及汉字，不支持其它字符。请返回修改。", null, false, "名称有误");
+                return false;
+            }
+            var onSaveContentResponsed = function (data){
+                if(data.err_code === 0){
+                    $.cl.popupMessage("保存成功！", null, 3);
+                    $("#jstree").jstree().refresh_node(nodeId);
+                }else{
+                    $.cl.popupMessage("保存失败：" + data.err_msg);
+                }
+                localStorage.currentDocument = nodeId + "/" + fileName;
+                $.cl.renderCurrentEditDocumentTitle();
+            };
+            $.cl.sendRequest({action: "save", node_id: nodeId + "/" + fileName, content: content}, onSaveContentResponsed);
+        };
+        $("#input-modal-confirm-btn").data("nodeId", path).data("content", content).off("click").click(onConfirmBtnClicked);
+        $("#input-modal-title").html("保存文档到你的目录中");
+        $("#input-modal-body").html([
+            '<p>将你编辑的文档保存到“<strong>' + path + '/”</strong>下。</p>',
+            '<p>这个路径可能是系统默认的，但如果你想改变存放的地方，请在左侧的目录结构中点击你想保存的位置，然后再按下“Ctrl”和“S”键。</p>',
+            '<label>文件名: <input class="redinput" type="text" name="folder-name"/></label>'
+        ].join(""));
+        $("input[name=folder-name]").keyup(function(e){if(e.keyCode === 13)$("#input-modal-confirm-btn").trigger("click");});
+        $("#input-modal").modal("show");
+    },
     openFile: function (nodeId){
-        console.log("openFile nodeId: ", nodeId);
+        if ($.cl.onOpenFile){
+            $.cl.popupMessage("正在加载，请稍候。", undefined, 3);
+            return;
+        }else{
+            $.cl.onOpenFile = true;
+        }
+
+        $("#input-text-area").prev().html("正在加载...");
+        var onFileOpenedResponsed = function (data){
+            $.cl.onOpenFile = false;
+            if (data.err_code !== 0){
+                var msg = "操作失败。详细信息：" + data.err_msg;
+                $.cl.popupMessage(msg);
+                return ;
+            }
+            var content = data.content;
+            localStorage.currentDocument = data.path;
+            $.cl.renderCurrentEditDocumentTitle();
+            document.getElementById('input-text-area').value = content;
+        };
+        var onOpenFileFailed = function (e){
+            $.cl.onOpenFile = false;
+            $.cl.popupMessage("操作失败，请检查你的网络连接。")
+        };
+        $.cl.sendRequest({action: "open", "node_id": nodeId}, onFileOpenedResponsed, onOpenFileFailed);
     },
     renderJstreeContextMenu: function(node){
         var selectedNodeId = node.id;
@@ -315,7 +420,17 @@ $.cl = {
         if (jstreeInstance.jstree()){
             jstreeInstance.jstree().destroy()
         }
-        jstreeInstance.jstree({
+        jstreeInstance.on("ready.jstree", function(){
+            if (localStorage.currentDocument){
+                $.cl.openJstreeNode(localStorage.currentDocument);
+                $.cl.openFile(localStorage.currentDocument);
+            }
+        }).on("select_node.jstree", function (e, node){
+            var selectedNodeId = node.node.id;
+            if (localStorage.currentDocument !== selectedNodeId){
+                $.cl.openFile(selectedNodeId);
+            }
+        }).jstree({
             core: {
                 multiple: false,
                 data: {
@@ -358,6 +473,7 @@ $.cl = {
     releasePageResource: function (){},
     renderUnloginPage: function (){
         $.cl.releasePageResource();
+        $("#input-text-area").prev().html("编辑");
         var navHtml = [
             '<a href="javascript:void(0)" id="login" ><i class="fa fa-sign-in" aria-hidden="true"></i> 登录</a>',
             '<a href="javascript:void(0)" id="register" ><i class="fa fa-table" aria-hidden="true"></i> 注册</a>'
@@ -374,19 +490,32 @@ $.cl = {
             $("#login-modal").modal("hide");
             return $("#login-or-regist").html() === "注册" ? $.cl.regist() : $.cl.login();
         });
+        $("#top-dynamic-nav").html("");
         $.cl.getAndRenderDefaultFileListAndPage();
     },
-    currentDocument: undefined,
-    onSaveContent: false,
     saveContent: function (){
-        console.log("saveContent");
+        if (!(window.contextData.loginInfo && window.contextData.loginInfo.email)){
+            $.cl.popupMessage("请登录。");
+            return ;
+        }
+
         var content = $("#input-text-area").val();
         if (!content.trim(" \n\r\t")) return;
-        if ($.cl.onSaveContent) return;
-        if (!$.cl.currentDocument){
-            $("#mkdir-modal")
+        var onSaveResponsed = function (){$.cl.popupMessage("保存成功！", null, 3)};
+        if (localStorage.currentDocument){
+            $.cl.clearMessage();
+            $.cl.sendRequest({action: "save", node_id: localStorage.currentDocument, content: content}, onSaveResponsed);
+            return ;
         }
-        console.log(content);
+        /* show confirm */
+        var path = "",
+            topSelected = $("#jstree").jstree().get_top_selected(true);
+        if (topSelected.length < 1){
+            path = window.contextData.loginInfo.email;
+        }else{
+            path = topSelected[0].type === "folder" ? topSelected[0].id : topSelected[0].parent;
+        }
+        $.cl.showSaveContentDialog(path, content);
     },
     daemonToTransMdId: undefined,
     oldContent: undefined,

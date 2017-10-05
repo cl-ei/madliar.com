@@ -372,7 +372,11 @@ def rename(request):
             "err_msg": "服务器内部错误。"
         })
 
-    return json_to_response({"err_code": 0})
+    response_data = {
+        "err_code": 0,
+        "old_node_id": request.POST.get("node_id")
+    }
+    return json_to_response(response_data)
 
 
 @supported_action(action="new")
@@ -433,3 +437,107 @@ def newfile(request):
         })
 
     return json_to_response({"err_code": 0})
+
+
+@supported_action(action="save")
+@login_required
+def save(request):
+    path = request.POST.get("node_id")
+    email = request.COOKIES.get("email")
+
+    # 检查path
+    if path.split("/")[0] != email:
+        return json_to_response({
+            "err_code": 403,
+            "err_msg": "路径不存在，请稍后再试。"
+        })
+    if type(path) != unicode:
+        try:
+            path = path.decode("utf-8")
+        except Exception:
+            return json_to_response({
+                "err_code": 403,
+                "err_msg": "错误的编码格式。"
+            })
+    if os.name in ("nt", ):
+        path = "\\".join(path.split("/"))
+    full_path = os.path.join(app_notebook_path, path)
+
+    # 检查content
+    content = request.POST.get("content")
+    if len(content) > 40960:
+        return json_to_response({
+            "err_code": 403,
+            "err_msg": "内容太长！请确保不超过40KB。"
+        })
+
+    base_path, file_name = os.path.split(full_path)
+    if not os.path.exists(base_path):
+        return json_to_response({
+            "err_code": 403,
+            "err_msg": "目录不存在！"
+        })
+
+    try:
+        with open(full_path, "w") as f:
+            f.write(content)
+    except Exception:
+        # TODO: add log.
+        return json_to_response({
+            "err_code": 500,
+            "err_msg": "服务器内部错误。"
+        })
+
+    return json_to_response({"err_code": 0})
+
+
+@supported_action(action="open")
+@login_required
+def openfile(request):
+    path = request.POST.get("node_id")
+    email = request.COOKIES.get("email")
+
+    # 检查path
+    if path.split("/")[0] != email:
+        return json_to_response({
+            "err_code": 403,
+            "err_msg": "路径不存在，请稍后再试。"
+        })
+    if type(path) != unicode:
+        try:
+            path = path.decode("utf-8")
+        except Exception:
+            return json_to_response({
+                "err_code": 403,
+                "err_msg": "错误的编码格式。"
+            })
+    if os.name in ("nt", ):
+        path = "\\".join(path.split("/"))
+    full_path = os.path.join(app_notebook_path, path)
+
+    if not os.path.exists(full_path):
+        return json_to_response({
+            "err_code": 403,
+            "err_msg": "内容不存在。"
+        })
+    if os.path.getsize(full_path) > 40960:
+        return json_to_response({
+            "err_code": 403,
+            "err_msg": "内容太长，不支持预览。请确保不超过40KB。"
+        })
+
+    try:
+        with open(full_path, "r") as f:
+            content = f.read()
+    except Exception:
+        return json_to_response({
+            "err_code": 500,
+            "err_msg": "服务器内部错误。"
+        })
+
+    response_data = {
+        "err_code": 0,
+        "content": content,
+        "path": request.POST.get("node_id"),
+    }
+    return json_to_response(response_data)

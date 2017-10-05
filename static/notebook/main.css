@@ -106,6 +106,10 @@ input{
     width: calc(100% - 20px);
     margin-left: 10px;
     margin-bottom: 10px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    -o-text-overflow: ellipsis;
 }
 #nav{
     height: 50px;
@@ -184,6 +188,7 @@ input{
 }
 #input-modal .modal-body p{
     text-align: left;
+    word-wrap: break-word;
 }
 @media (max-width: 9999px) {
     #folder-tree {
