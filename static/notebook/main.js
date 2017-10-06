@@ -353,7 +353,7 @@ $.cl = {
             "open": {
                 "label": "打开",
                 "action": function () {
-                    if(node.type === "text"){
+                    if(node.type === "text" || node.type === "md"){
                         $.cl.openFile(selectedNodeId);
                     }else{
                         $.cl.popupConfirm("不支持打开二进制文件。", null, false)
