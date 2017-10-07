@@ -5,7 +5,6 @@ import re
 import shutil
 
 from madliar.http.response import HttpResponse
-from lib.randomlib import randstr
 from application.notebook import dao
 from etc.config import APP_NOTE_BOOK_CONFIG
 
@@ -39,8 +38,9 @@ class supported_action(object):
 def handler(request):
     if request.method.lower() != "post":
         return json_to_response({"err_code": 403, "err_msg": "Only POST method supported."})
-    
+
     action = request.POST.get("action")
+    print "action: %s" % request.POST
     try:
         http_response = supported_action.run(action, request)
     except supported_action.ActionDoesNotExisted:
@@ -580,3 +580,15 @@ def share(request):
     else:
         response_data = {"err_code": 403, "err_msg": data}
     return json_to_response(response_data)
+
+
+@supported_action(action="upload_file")
+@login_required
+def upload_file(request):
+    uploaded_file = request.FILES.get("file")
+    filename = uploaded_file.get("filename")
+
+    with open(filename, "wb") as f:
+        for chunk in uploaded_file["chunk"]:
+            f.write(chunk)
+    return json_to_response({"err_code": 0})

@@ -588,14 +588,35 @@ $.cl = {
             obj.selectionStart = obj.selectionEnd = cursorPos;
         }
     },
+    uploadFile: function (file){
+        console.log("upload file: ", file.name);
+        var data = new FormData($("#upload-file-form")[0]);
+        data.set("file", file);
+        data.set("action", "upload_file");
+
+        $.ajax({
+            url: "/notebook/api",
+            type: "post",
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            success:function(data){
+                console.log(data);
+            },
+            error:function(e){
+                console.log(e);
+            }
+        });
+    },
     onDropFileToJsTree: function (e){
         e.preventDefault();
         var fileList = e.dataTransfer.files;
         if(fileList.length === 0){
             return false;
         }
-        var filename = fileList[0].name;
-        if (!filename.match(/^[\.a-zA-Z0-9_\u4e00-\u9fa5]+$/)){
+        var file = fileList[0];
+        if (!file.name.match(/^[\.a-zA-Z0-9_\u4e00-\u9fa5]+$/)){
             $.cl.popupConfirm("文件名仅允许包含数字、字母、下划线以及汉字，不支持其它字符。请返回修改。", null, false, "文件名有误");
             return false;
         }
@@ -609,40 +630,11 @@ $.cl = {
         var path = $("#jstree").jstree().get_top_selected();
         path = (path.length < 1 || path[0] === ".") ? window.contextData.loginInfo.email : path[0];
         $.cl.popupConfirm(
-            "将“" + filename + "”保存到“"+ path +"”?",
-            function(){
-                console.log("True: ");
-            },
+            "将“" + file.name + "”保存到“"+ path +"”?",
+            function(){$.cl.uploadFile(file)},
             null,
             "上传文件"
         );
-        return false;
-        /*
-        console.log(filename);
-
-        console.log("fileList[0]:", fileList[0]);
-        return ;
-
-        var data = new FormData($("#upload-file-form")[0]);
-        data.set("file", fileList[0]);
-        data.set("act", "upload_file");
-
-        $.ajax({
-            url: "/blog/api/",
-            type: "post",
-            data: data,
-            cache: false,
-            processData: false,
-            contentType: false,
-            success:function(data){
-                console.log(data);
-                showRewcentImage(data);
-            },
-            error:function(e){
-                console.log(e);
-            }
-        });
-        */
     },
     initPage: function (){
         (window.contextData.loginInfo && window.contextData.loginInfo.email ? $.cl.renderLoginPage : $.cl.renderUnloginPage)();
