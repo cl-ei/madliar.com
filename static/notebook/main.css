@@ -120,6 +120,9 @@ input{
     overflow: hidden;
     -o-text-overflow: ellipsis;
 }
+.sub-content-full-screen{
+    width: calc(100% - 40px) !important;
+}
 #nav{
     height: 50px;
     border-bottom: 1px solid #ccc;
@@ -164,7 +167,6 @@ input{
     display: block;
     height: fit-content;
     float: left;
-    overflow: auto;
     margin: 20px 10px 0 0;
 }
 #input-area{
@@ -189,7 +191,40 @@ input{
 }
 #jstree{
     overflow: auto;
-    height: 100%;
+    height: calc(100% - 25px);
+    margin-top: 25px;
+    border-top: 1px solid;
+}
+#jstree-outdent{
+    display: block;
+    height: 20px;
+    float: right;
+    text-align: right;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+#jstree-outdent:hover{
+    border-bottom: .1em solid;
+}
+#show-folder-tree{
+    display: none;
+    width: 20px;
+    margin-top: 22px;
+    height: calc(100% - 40px);
+    box-shadow: -4px 5px 20px 7px rgba(0, 0, 0, 0.15);
+    float: left;
+    cursor: pointer;
+    background: #fff;
+}
+#show-folder-tree:hover{
+    background: #eee;
+    color: #000;
+}
+#show-folder-tree-p{
+    position: absolute;
+    top: calc(50% - 75px);
+    text-align: center;
+    height: 150px;
 }
 #input-modal .modal-body{
     margin-left: 20%;

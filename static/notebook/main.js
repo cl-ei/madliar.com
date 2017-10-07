@@ -636,6 +636,16 @@ $.cl = {
         if ($.cl.daemonToTransMdId){
             clearInterval($.cl.daemonToTransMdId);
         }
+        $("#jstree-outdent").off("click").click(function(){
+            $("#folder-tree").fadeOut(0);
+            $("#show-folder-tree").fadeIn(0);
+            $("#sub-content").addClass("sub-content-full-screen");
+        });
+        $("#show-folder-tree").off("click").click(function(){
+            $("#folder-tree").fadeIn(0);
+            $("#show-folder-tree").fadeOut(0);
+            $("#sub-content").removeClass("sub-content-full-screen");
+        });
         $.cl.daemonToTransMdId = $.cl.daemonToTransMd();
         /*
          * drag event
