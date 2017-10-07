@@ -3,6 +3,7 @@ import redis
 import json
 import time
 from lib.randomlib import randstr
+from lib import memcache
 
 
 class RedisKeyToJSON(object):
@@ -130,3 +131,30 @@ def check_login(email, token):
 
     now = int(time.time())
     return now < expire_time
+
+
+# For sharing.
+path_to_key_prifix = "PATH_TO_SKEY_%s"  # return key
+key_to_path_prifix = "SKEY_TO_PATH_%s"  # return path
+
+
+def share_file(path):
+    s_key = memcache.get(path_to_key_prifix % path)
+    if s_key:
+        return True, s_key
+
+    for _ in range(300):
+        new_key = randstr(16)
+        key_to_path = key_to_path_prifix % new_key
+
+        old_path = memcache.get(key_to_path)
+        if old_path is None:
+            memcache.set(key_to_path_prifix % new_key, path, 0)
+            memcache.set(path_to_key_prifix % path, new_key, 0)
+            return True, new_key
+
+    return False, ""
+
+
+def get_shared_file(key):
+    return memcache.get(key_to_path_prifix % key)

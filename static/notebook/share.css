@@ -1,0 +1,38 @@
+html, body{
+    margin: 0;
+    padding: 0;
+}
+body{
+  max-width: 1000px;
+}
+h1, h2, h3 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+.share-container{
+  padding: 20px;
+}
+@media (max-width: 500px){
+  .share-container{
+    border: 1px solid #dcdcdc;
+    margin-top: 30px;
+    padding: 40px 50px 50px 50px;
+    box-shadow: 3px 3px 10px 2px rgba(218, 218, 218, 0.5);
+  }
+}
+@media (max-width: 1360px){
+  .share-container{
+    border: 1px solid #dcdcdc;
+    margin-top: 30px;
+    padding: 40px 50px 50px 50px;
+    box-shadow: 3px 3px 10px 2px rgba(218, 218, 218, 0.5);
+  }
+}
+@media (max-width: 1900px){
+  .share-container{
+    border: 1px solid #dcdcdc;
+    margin-top: 30px;
+    padding: 40px 50px 50px 50px;
+    box-shadow: 3px 3px 10px 2px rgba(218, 218, 218, 0.5);
+  }
+}

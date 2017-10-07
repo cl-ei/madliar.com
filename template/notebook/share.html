@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html class="no-js" lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <title>{{ title }} - CL's 疯人分享</title>
+  {% if author %}<meta name="author" content="{{ author }}" />{% endif %}
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/static/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/static/notebook/share.css">
+
+  <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+  <script type="text/javascript" src="/static/js/marked.js"></script>
+</head>
+<body>
+  <div class="share-container">
+    <div class="post-content" id="article-detail">{{ detail }}</div>
+  </div>
+<script>
+    window.needTrans = {% if need_trans %}true{% else %}false{% endif %};
+</script>
+<script>
+$(function(){
+    if(window.needTrans){
+        var articleDom = $("#article-detail");
+        articleDom.html(marked(articleDom.html()));
+    }
+});
+</script>
+</body>
+</html>

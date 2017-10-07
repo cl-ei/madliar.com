@@ -5,7 +5,7 @@ import re
 import shutil
 
 from madliar.http.response import HttpResponse
-
+from lib.randomlib import randstr
 from application.notebook import dao
 from etc.config import APP_NOTE_BOOK_CONFIG
 
@@ -540,4 +540,43 @@ def openfile(request):
         "content": content,
         "path": request.POST.get("node_id"),
     }
+    return json_to_response(response_data)
+
+
+@supported_action(action="share")
+@login_required
+def share(request):
+    path = request.POST.get("node_id")
+    email = request.COOKIES.get("email")
+
+    # 检查path
+    if path.split("/")[0] != email:
+        return json_to_response({
+            "err_code": 403,
+            "err_msg": "路径不存在，请稍后再试。"
+        })
+    if type(path) != unicode:
+        try:
+            path = path.decode("utf-8")
+        except Exception:
+            return json_to_response({
+                "err_code": 403,
+                "err_msg": "错误的编码格式。"
+            })
+
+    if os.name in ("nt", ):
+        path = "\\".join(path.split("/"))
+    full_path = os.path.join(app_notebook_path, path)
+
+    if not os.path.exists(full_path):
+        return json_to_response({
+            "err_code": 403,
+            "err_msg": "内容不存在。"
+        })
+
+    result, data = dao.share_file(full_path)
+    if result:
+        response_data = {"err_code": 0, "key": data}
+    else:
+        response_data = {"err_code": 403, "err_msg": data}
     return json_to_response(response_data)

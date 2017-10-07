@@ -305,7 +305,7 @@ $.cl = {
                 localStorage.currentDocument = nodeId + "/" + fileName;
                 $.cl.renderCurrentEditDocumentTitle();
             };
-            $.cl.sendRequest({action: "save", node_id: nodeId + "/" + fileName, content: content}, onSaveContentResponsed);
+            $.cl.sendRequest({action: "save", node_id: nodeId + "/" + fileName, content: encodeURIComponent(content)}, onSaveContentResponsed);
         };
         $("#input-modal-confirm-btn").data("nodeId", path).data("content", content).off("click").click(onConfirmBtnClicked);
         $("#input-modal-title").html("保存文档到你的目录中");
@@ -343,6 +343,22 @@ $.cl = {
             $.cl.popupMessage("操作失败，请检查你的网络连接。")
         };
         $.cl.sendRequest({action: "open", "node_id": nodeId}, onFileOpenedResponsed, onOpenFileFailed);
+    },
+    shareFile: function(nodeId){
+        var onShareResponsed = function (data){
+            if (data.err_code !== 0){
+                var msg = "操作失败。详细信息：" + data.err_msg;
+                $.cl.popupMessage(msg);
+                return ;
+            }
+            var new_url = window.location.protocol + "//" + window.location.host + "/notebook/" + data.key;
+            $.cl.popupConfirm(
+                '<p>此文件的分享链接已经生成：<br />' + new_url + '<br />在新的标签页打开吗？</p>',
+                function(){window.open(new_url)}
+            );
+            console.log(data);
+        };
+        $.cl.sendRequest({action: "share", node_id: nodeId}, onShareResponsed)
     },
     renderJstreeContextMenu: function(node){
         var selectedNodeId = node.id;
@@ -409,9 +425,7 @@ $.cl = {
             },
             "share": {
                 "label": "分享",
-                "action": function(){
-                    // $.cl.showMkdirDialog(selectedNodeId)
-                }
+                "action": function(){$.cl.shareFile(selectedNodeId)}
             }
         }
     },
