@@ -222,6 +222,7 @@ input{
 }
 #show-folder-tree-p{
     position: absolute;
+    width: 20px;
     top: calc(50% - 75px);
     text-align: center;
     height: 150px;
