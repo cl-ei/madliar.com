@@ -35,21 +35,44 @@ $.cl = {
             $("#uavaliable-mask").css({"display": "none"});
         }
     },
+    popupedMessageBoxId: undefined,
     popupMessage: function (msg, title, timeout){
         var promptModal = $(".cl-prompt");
         if(promptModal.css("opacity") > 0){
             $.cl.clearMessage();
             setTimeout(function(){
-                $.cl.popupMessage(msg, title)
+                $.cl.popupMessage(msg, title, timeout)
             }, 200);
         }else{
+            if(timeout > 0){
+                if($.cl.popupedMessageBoxId){
+                    clearInterval($.cl.popupedMessageBoxId);
+                    $.cl.popupedMessageBoxId = undefined;
+                }
+                $(".cl-prompt-clock").css({display: "block"}).find("span").html(timeout);
+                $.cl.popupedMessageBoxId = setInterval(function(){
+                    var clPromptClockTimeOutDom = $(".cl-prompt-clock span");
+                    var timeout = parseInt(clPromptClockTimeOutDom.html()) - 1;
+                    clPromptClockTimeOutDom.html(timeout);
+                    if(timeout <= 0){
+                        $.cl.clearMessage();
+                        clearInterval($.cl.popupedMessageBoxId);
+                        $.cl.popupedMessageBoxId = undefined;
+                    }
+                }, 1000)
+            }else{
+                $(".cl-prompt-clock").css({display: "none"})
+            }
             $("#cl-prompt-title").html(title || "提示");
             $("#cl-prompt-content").html(msg);
-            promptModal.css({"opacity": "1", "top": "20px", "z-index": "10"}).children().eq(0).off("click").click($.cl.clearMessage);
-            if (timeout > 0){setTimeout($.cl.clearMessage, timeout*1000);}
+            promptModal.css({"opacity": "1", "top": "20px", "z-index": "10"}).children().eq(1).off("click").click($.cl.clearMessage);
         }
     },
     clearMessage: function (){
+        if($.cl.popupedMessageBoxId){
+            clearInterval($.cl.popupedMessageBoxId);
+            $.cl.popupedMessageBoxId = undefined;
+        }
         $(".cl-prompt").css({"opacity": "0", "top": "0px", "z-index": "-10"});
     },
     popupConfirm: function (msg, callback, cancelback, title){
@@ -138,8 +161,12 @@ $.cl = {
     rm: function (nodeId){
         var afterRmSucceed = function (data){
             if(data.err_code === 0){
-                $.cl.popupMessage("删除成功！", null, 3)
+                $.cl.popupMessage("删除成功！", null, 3);
                 $("#jstree").jstree().refresh_node(nodeId.split("/").slice(0, -1).join("/"));
+                if(nodeId === localStorage.currentDocument){
+                    localStorage.removeItem("currentDocument");
+                    $.cl.renderCurrentEditDocumentTitle();
+                }
             }else{
                 $.cl.popupMessage("删除失败：" + data.err_msg);
             }
@@ -253,6 +280,7 @@ $.cl = {
             $("#input-text-area").prev().html("编辑 - " + localStorage.currentDocument);
         }else{
             $("#input-text-area").prev().html("编辑");
+            document.getElementById('input-text-area').value = "";
         }
     },
     showSaveContentDialog: function (path, content){
@@ -531,6 +559,21 @@ $.cl = {
             }
         }, 400);
     },
+    insertStrToTextarea: function(str){
+        var obj = document.getElementById("input-text-area");
+        if (document.selection) {
+            var sel = document.selection.createRange();
+            sel.text = str;
+        }else if(typeof obj.selectionStart === "number" && typeof obj.selectionEnd === "number") {
+            var startPos = obj.selectionStart,
+                endPos = obj.selectionEnd,
+                cursorPos = startPos,
+            tmpStr = obj.value;
+            obj.value = tmpStr.substring(0, startPos) + str + tmpStr.substring(endPos, tmpStr.length);
+            cursorPos += str.length;
+            obj.selectionStart = obj.selectionEnd = cursorPos;
+        }
+    },
     onDropFileToJsTree: function (e){
         e.preventDefault();
         var fileList = e.dataTransfer.files;
@@ -605,14 +648,17 @@ $.cl = {
             dragenter: $.cl.preventDefault,
             dragover: $.cl.preventDefault,
             keydown: function(event){
-                /*
-                if(window.event.keyCode == 9){
+                if(event.keyCode === 9){
                     if($("#input-text-area").is(":focus")){
                         event.preventDefault();
-                        insertStr("\t");
+                        $.cl.insertStrToTextarea(
+                            (localStorage.currentDocument && localStorage.currentDocument.substr(-2).toLowerCase() === "py")
+                            ? "    "
+                            : "\t"
+                        )
                     }
                     return ;
-                }*/
+                }
                 if(event.ctrlKey  &&  event.keyCode === 83){
                     event.preventDefault();
                     $("#save-btn").trigger("click");

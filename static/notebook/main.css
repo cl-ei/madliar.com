@@ -96,6 +96,15 @@ input{
     color: white;
     background: #555;
 }
+.cl-prompt-clock{
+    font-size: 12px;
+    float: right;
+    margin-right: 30px;
+    margin-top: -2px;
+}
+.cl-prompt-clock span{
+    text-decoration: underline;
+}
 .hidden-area{
     display: none;
 }

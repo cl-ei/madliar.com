@@ -360,7 +360,7 @@ def rename(request):
     if os.path.exists(new_path):
         return json_to_response({
             "err_code": 403,
-            "err_msg": "新的目录已经存在。"
+            "err_msg": "新的目录或文件已经存在。"
         })
 
     try:
