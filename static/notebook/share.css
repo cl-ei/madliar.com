@@ -24,6 +24,7 @@ h1, h2, h3 {
         margin: 0 !important;
         padding: 10px 20px !important;
         min-height: 300px !important;
+        height: 100% !important;
     }
 }
 @media (max-width: 1360px){
