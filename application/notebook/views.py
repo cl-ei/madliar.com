@@ -23,7 +23,7 @@ def s(request, key):
         return Http404Response()
 
     try:
-        with open(path, "r") as f:
+        with open(path, "rb") as f:
             content = f.read()
     except Exception:
         # TODO: add log.

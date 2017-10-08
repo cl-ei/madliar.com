@@ -40,7 +40,6 @@ def handler(request):
         return json_to_response({"err_code": 403, "err_msg": "Only POST method supported."})
 
     action = request.POST.get("action")
-    print "action: %s" % request.POST
     try:
         http_response = supported_action.run(action, request)
     except supported_action.ActionDoesNotExisted:
@@ -585,10 +584,43 @@ def share(request):
 @supported_action(action="upload_file")
 @login_required
 def upload_file(request):
+    path = request.POST.get("node_id")
+    email = request.COOKIES.get("email")
+
+    # 检查path
+    if path.split("/")[0] != email:
+        return json_to_response({
+            "err_code": 403,
+            "err_msg": "路径不存在，请稍后再试。"
+        })
+    if type(path) != unicode:
+        try:
+            path = path.decode("utf-8")
+        except Exception:
+            return json_to_response({
+                "err_code": 403,
+                "err_msg": "错误的编码格式。"
+            })
+
+    if os.name in ("nt",):
+        path = "\\".join(path.split("/"))
+    full_path = os.path.join(app_notebook_path, path)
+
+    if not os.path.exists(full_path):
+        return json_to_response({
+            "err_code": 403,
+            "err_msg": "内容不存在。"
+        })
+
     uploaded_file = request.FILES.get("file")
     filename = uploaded_file.get("filename")
+    try:
+        with open(os.path.join(full_path, filename), "wb") as f:
+            f.write(uploaded_file["contents"])
+    except Exception:
+        return json_to_response({
+            "err_code": 500,
+            "err_msg": "服务器内部错误。"
+        })
 
-    with open(filename, "wb") as f:
-        for chunk in uploaded_file["chunk"]:
-            f.write(chunk)
     return json_to_response({"err_code": 0})

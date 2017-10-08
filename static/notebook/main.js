@@ -392,6 +392,12 @@ $.cl = {
                 "action": function () {
                     $.cl.showRenameDialog(selectedNodeId, true);
                 }
+            },
+            "upload": {
+                "label": "上传文件",
+                "action": function () {
+                    $("#file-input").data("path", selectedNodeId).trigger("click");
+                }
             }
         } : {
             "open": {
@@ -514,6 +520,7 @@ $.cl = {
         $("#save-btn").off("click").click($.cl.saveContent);
         $.cl.getAndRenderLoginedFileListAndPage();
         document.getElementById("jstree").addEventListener("drop", $.cl.onDropFileToJsTree, false);
+        document.getElementById("input-text-area").addEventListener("drop", $.cl.onDropFileToJsTree, false);
     },
     releasePageResource: function (){},
     renderUnloginPage: function (){
@@ -588,10 +595,10 @@ $.cl = {
             obj.selectionStart = obj.selectionEnd = cursorPos;
         }
     },
-    uploadFile: function (file){
-        console.log("upload file: ", file.name);
-        var data = new FormData($("#upload-file-form")[0]);
+    uploadFile: function (file, path){
+        var data = new FormData();
         data.set("file", file);
+        data.set("node_id", path);
         data.set("action", "upload_file");
 
         $.ajax({
@@ -601,10 +608,15 @@ $.cl = {
             cache: false,
             processData: false,
             contentType: false,
-            success:function(data){
-                console.log(data);
+            success: function(data){
+                if (data.err_code === 0){
+                    $.cl.popupMessage("上传成功！", null, 3);
+                    $("#jstree").jstree().refresh_node(path);
+                }else{
+                    $.cl.popupConfirm(data.err_msg, null, false, "上传失败");
+                }
             },
-            error:function(e){
+            error: function(e){
                 console.log(e);
             }
         });
@@ -627,11 +639,19 @@ $.cl = {
             return false;
         }
 
-        var path = $("#jstree").jstree().get_top_selected();
-        path = (path.length < 1 || path[0] === ".") ? window.contextData.loginInfo.email : path[0];
+        var path = $("#jstree").jstree().get_top_selected(true);
+        if (path.length < 1){
+            path = window.contextData.loginInfo.email;
+        }else{
+            path = path[0].type === "folder" ? path[0].id : path[0].parent;
+        }
+        var promptMsg = [
+            "<p>将“" + file.name + "”保存到“"+ path +"/”?</p>",
+            '<p>这个路径可能是系统默认的，但如果你想改变存放的地方，请在左侧的目录结构中点击你想保存的位置，然后再按下“Ctrl”和“S”键。</p>'
+        ].join("");
         $.cl.popupConfirm(
-            "将“" + file.name + "”保存到“"+ path +"”?",
-            function(){$.cl.uploadFile(file)},
+            promptMsg,
+            function(){$.cl.uploadFile(file, path)},
             null,
             "上传文件"
         );
@@ -651,6 +671,11 @@ $.cl = {
             $("#folder-tree").fadeIn(0);
             $("#show-folder-tree").fadeOut(0);
             $("#sub-content").removeClass("sub-content-full-screen");
+        });
+        $("#file-input").change(function(){
+            var file = $(this)[0].files[0],
+                path = $(this).data("path");
+            $.cl.uploadFile(file, path);
         });
         $.cl.daemonToTransMdId = $.cl.daemonToTransMd();
         /*
@@ -685,12 +710,3 @@ $.cl = {
     preventDefault: function (e){e.preventDefault()}
 };
 $(window).resize($.cl.windowSizeMonitor).on("ready", $.cl.windowSizeMonitor);$($.cl.initPage);
-
-
-/*
- * TODO:
- * 1、文件夹重命名后，下方的文档没有即时更新。
- * 2、提示框倒计时。
- * 3、上传文件功能。
- *
- */
