@@ -12,7 +12,7 @@ app_notebook_path = APP_NOTE_BOOK_CONFIG.get("user_root_foler")
 
 
 def json_to_response(data):
-    return HttpResponse(json.dumps(data), content_type="application/json")
+    return HttpResponse(json.dumps(data, ensure_ascii=False), content_type="application/json")
 
 
 class supported_action(object):
