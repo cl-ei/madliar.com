@@ -526,8 +526,15 @@ def openfile(request):
         })
 
     try:
-        with open(full_path, "r") as f:
+        with open(full_path, "rb") as f:
             content = f.read()
+        if not isinstance(content, unicode):
+            content = content.decode("utf-8")
+    except UnicodeDecodeError:
+        return json_to_response({
+            "err_code": 403,
+            "err_msg": "文件编码错误。请以UTF-8格式保存你的文档。"
+        })
     except Exception:
         return json_to_response({
             "err_code": 500,
