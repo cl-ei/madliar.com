@@ -336,6 +336,7 @@ def rename(request):
                 "err_code": 403,
                 "err_msg": "错误的编码格式。"
             })
+    original_old_node_id = path
     if os.name in ("nt", ):
         path = "\\".join(path.split("/"))
 
@@ -373,7 +374,7 @@ def rename(request):
 
     response_data = {
         "err_code": 0,
-        "old_node_id": request.POST.get("node_id")
+        "old_node_id": original_old_node_id
     }
     return json_to_response(response_data)
 
@@ -510,6 +511,8 @@ def openfile(request):
                 "err_code": 403,
                 "err_msg": "错误的编码格式。"
             })
+    original_path = path
+
     if os.name in ("nt", ):
         path = "\\".join(path.split("/"))
     full_path = os.path.join(app_notebook_path, path)
@@ -544,7 +547,7 @@ def openfile(request):
     response_data = {
         "err_code": 0,
         "content": content,
-        "path": request.POST.get("node_id"),
+        "path": original_path,
     }
     return json_to_response(response_data)
 
