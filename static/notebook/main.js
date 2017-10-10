@@ -356,7 +356,6 @@ $.cl = {
                 '<p>此文件的分享链接已经生成：<br />' + new_url + '<br />在新的标签页打开吗？</p>',
                 function(){window.open(new_url)}
             );
-            console.log(data);
         };
         $.cl.sendRequest({action: "share", node_id: nodeId}, onShareResponsed)
     },
@@ -617,7 +616,7 @@ $.cl = {
                 }
             },
             error: function(e){
-                console.log(e);
+                $.cl.popupMessage("操作失败！请检查你的网络。")
             }
         });
     },
