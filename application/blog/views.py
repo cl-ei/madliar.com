@@ -4,7 +4,7 @@ import os
 from madliar.http.response import HttpResponse
 from madliar.template import render
 
-from etc.config import PROJECT_ROOT, PARSED_ARTICLE_JSON
+from etc.config import PROJECT_ROOT, PARSED_ARTICLE_JSON, CDN_URL
 
 
 def favicon_response(request):
@@ -24,6 +24,7 @@ def home_page(request):
             "description": u"CL，编程爱好者，这是CL的官方博客，记录生活感悟和学习点滴。",
             "keywords": u"MADLIAR, CL, CL's 疯言疯语, 疯言疯语, 风言风语, CL博客",
         },
+        "CDN_URL": CDN_URL,
     }
     return render(
         "template/home_page.html",

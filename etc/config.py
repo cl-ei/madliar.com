@@ -24,6 +24,8 @@ MUSIC_FOLDER = "./music"
 
 # ----------------------------- windows CONFIG ----------------------------- #
 if os.name in ("nt", ):
+    CDN_URL = ""
+
     PROJECT_ROOT = "./"
     LOG_PATH = "./"
     ACCESS_LOG_PATH = "./"
@@ -35,6 +37,8 @@ if os.name in ("nt", ):
 
 # ----------------------------- linux CONFIG ----------------------------- #
 else:
+    CDN_URL = "https://src.madliar.com"
+
     PROJECT_ROOT = "/home/wwwroot/madliar.com"
     LOG_PATH = "/home/wwwroot/log"
     ACCESS_LOG_PATH = "/home/wwwroot/log/access"

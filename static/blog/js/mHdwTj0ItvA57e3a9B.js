@@ -106,7 +106,7 @@ $(function(){
         }
     }
     function initialization(){
-        $('#background').on("load", runCanvas).attr("src", "/static/img/" + generateRadomInt() + ".jpg");
+        $('#background').on("load", runCanvas).attr("src", window.CDN_URL + "/static/img/" + generateRadomInt() + ".jpg");
     }
     function renderHomePage(){
         var homePageArticleBoxHtml = "";
@@ -117,7 +117,7 @@ $(function(){
                     '<div class="blog-timeline-box">',
                         '<div class="blog-timeline-wrapper">',
                             '<div class="blog-timeline-spin">',
-                                '<img src="/static/img/head_' + generateRadomInt(5) + '.png">',
+                                '<img src="' + window.CDN_URL + '/static/img/head_' + generateRadomInt(5) + '.png">',
                             '</div>',
                             '<div class="blog-timeline-time">' +
                                 '<span class="blog-timeline-content">' + article.create_time + '</span>' +
