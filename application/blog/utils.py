@@ -5,7 +5,7 @@ import random
 import re
 import sys
 
-from etc.config import PROJECT_ROOT, POST_ARTICLE_PATH, PARSED_ARTICLE_JSON
+from etc.config import PROJECT_ROOT, POST_ARTICLE_PATH, PARSED_ARTICLE_JSON, CDN_URL
 from lib.randomlib import randstr
 
 
@@ -106,7 +106,7 @@ def generate_cached_article_json(*args, **kwargs):
     total_article = u"".join([
         "window.articleList=", detail, ";",
         "window.articleIdList=", id_list
-    ])
+    ]).replace("src=\"/static", "src=\"" + CDN_URL + "/static")
 
     article_js_file_path = os.path.join(PROJECT_ROOT, PARSED_ARTICLE_JSON)
     for existed_file in os.listdir(article_js_file_path):
