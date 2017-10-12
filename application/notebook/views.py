@@ -4,6 +4,8 @@ from madliar.http.response import HttpResponse, Http404Response, Http500Response
 from madliar.template import render
 from application.notebook import dao
 
+from etc.config import CDN_URL
+
 
 def handler(request):
     mad_token = request.COOKIES.get("madToken")
@@ -11,6 +13,7 @@ def handler(request):
 
     result = dao.check_login(email, mad_token)
     context = {"login_info": {"email": email}} if result else {}
+    context["CDN_URL"] = CDN_URL
     return render(
         "template/notebook/index.html",
         context=context
@@ -56,6 +59,7 @@ def s(request, key):
     context_data = {
         "title": title,
         "detail": content,
-        "need_trans": ex_name.lower() in ("md", "markdown")
+        "need_trans": ex_name.lower() in ("md", "markdown"),
+        "CDN_URL": CDN_URL
     }
     return render("template/notebook/share.html", context=context_data)
