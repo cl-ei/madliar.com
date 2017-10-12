@@ -89,11 +89,17 @@ $(function(){
         return parseInt(Math.random()*top, 10);
     }
     function runCanvas() {
+        /*
+         * 在使用CDN加速的时候回造成： `The canvas has been tainted by cross-origin data`的问题
+         *
+         */
+        /*
         if(document.body.clientWidth > 700){
             var engine = new RainyDay({image: this});
             engine.rain([ [2, 1, 0.08], [1, 1, 0.1], [3, 3, 0.2]], 0);
             setTimeout(function(){engine.stopRain()}, 30000);  // 30 seconds
         }
+        */
         clearTitleLoadingPrompt();
 
         $("#home-sub-page").fadeIn(300).next().fadeOut(0);
