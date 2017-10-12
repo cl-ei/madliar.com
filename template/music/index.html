@@ -9,16 +9,19 @@
     <meta name="description" content="Caoliang 的音乐">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="stylesheet" href="/static/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/static/css/jquery.nstSlider.min.css">
-    <link rel="stylesheet" href="/static/music/css/main.css">
+    <link rel="stylesheet" href="{{ CDN_URL }}/static/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{{ CDN_URL }}/static/css/jquery.nstSlider.min.css">
+    <link rel="stylesheet" href="{{ CDN_URL }}/static/music/css/main.css">
 
-    <script type="text/javascript" src="/static/js/jquery.min.js"></script>
-    <script type="text/javascript" src="/static/js/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="/static/js/jquery.nstSlider.min.js"></script>
+    <script type="text/javascript" src="{{ CDN_URL }}/static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="{{ CDN_URL }}/static/js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="{{ CDN_URL }}/static/js/jquery.nstSlider.min.js"></script>
     {% if ref %}
-    <script type="text/javascript" src="/static/music/js/main.js"></script>
-    <script>window.music_list = {{ music_list }};</script>
+    <script type="text/javascript" src="{{ CDN_URL }}/static/music/js/main.js"></script>
+    <script>
+        window.CDN_URL = "{{ CDN_URL }}";
+        window.music_list = {{ music_list }};
+    </script>
     {% else %}
     <style>
         body{
@@ -37,15 +40,15 @@
     <div id="player_border">
         <div id="first_layer">
             <div id="player_name" class="hxjj">
-                <img id="friend_link_p" src="/static/music/player/head.png">
+                <img id="friend_link_p" src="{{ CDN_URL }}/static/music/player/head.png">
             </div>
 
             <div id="btns">
-                <img id="btn_play" src="/static/music/player/pause.png" />
-                <img id="pgs_bar" src="/static/music/player/pgs_bar.png" />
+                <img id="btn_play" src="{{ CDN_URL }}/static/music/player/pause.png" />
+                <img id="pgs_bar" src="{{ CDN_URL }}/static/music/player/pgs_bar.png" />
 
                 <div id="pgs_border">
-                    <img id="pgs_block" src="/static/music/player/pgs_block.png" />
+                    <img id="pgs_block" src="{{ CDN_URL }}/static/music/player/pgs_block.png" />
                 </div>
             </div>
             <div id="btn_border">

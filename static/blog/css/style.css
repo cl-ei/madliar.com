@@ -195,11 +195,18 @@ input[type="color"]:focus, .uneditable-input:focus{
     display:inline-block;
 }
 .logo{
-    padding:0 20px;
+    color: #ccc;
+    padding: 0 20px;
     font-size: 40px;
-    user-select:none;
-    cursor: default;
+    user-select: none;
     position: absolute;
+    height: 100%;
+    cursor: pointer;
+    transition: all 0.4s ease-out;
+}
+.logo:hover{
+    color: white;
+    background: rgba(33, 24, 22, 1);
 }
 .right-menu{
     float:right;
@@ -207,6 +214,7 @@ input[type="color"]:focus, .uneditable-input:focus{
 .menu .navi, .social-icon{
     list-style:none;
     margin:0;
+    padding: 0;
 }
 .menu .navi {
     display:block;
@@ -780,6 +788,9 @@ canvas{
         padding-left: 10px;
         padding-right: 10px;
     }
+    .logo{
+        margin-left: 15%;
+    }
 }
 @media (max-width: 767px) {
     #detail-sub-page{
@@ -907,6 +918,12 @@ canvas{
     }
     .blog-concise-content{
         padding: 0 20px 0 20px;
+    }
+    #home-view{
+        display: none;
+    }
+    .logo{
+        margin-left: 0;
     }
 }
 @media (max-width:480px){

@@ -316,5 +316,6 @@ $(function(){
                 $(this).addClass("current");
             }
         });
+        $(".logo").click(function(){$("#home-view").trigger("click")});
     });
 });

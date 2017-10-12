@@ -14,10 +14,11 @@ $(function(){
     var frend_link_status = false;
     var friend_link_task_id = 0;
     var list_touch_start = 0;
-    var pauseImgPos = "/static/music/player/pause.png",
-        playImgPos = "/static/music/player/play.png",
-        musicFileFolder = "/music_file/",
-        hxjjImgLocation = "url('/static/music/friend_link/hxjj.jpg')";
+    if (!window.CDN_URL){window.CDN_URL = ""};
+    var pauseImgPos = window.CDN_URL + "/static/music/player/pause.png",
+        playImgPos = window.CDN_URL + "/static/music/player/play.png",
+        musicFileFolder = window.CDN_URL + "/music_file/",
+        hxjjImgLocation = "url('"+ window.CDN_URL +  +"/static/music/friend_link/hxjj.jpg')";
 
     function setCookie(cname, cvalue, exdays) {
         window.localStorage.setItem(cname, cvalue)
@@ -168,6 +169,7 @@ $(function(){
     function play_access(index,time){
         if(!arguments[1]){time = 0;}
         index = Number(index);
+        if (music_list.length < index){index = 0};
         current_song = index;
         msc_name = music_list[index].substring(0,music_list[index].length-4);
 
@@ -303,6 +305,7 @@ $(function(){
 
     if(player_status == "pause"){
         $("#btn_play").attr("src", playImgPos);
+        if (music_list.length < index){index = 0}
         msc_name = music_list[index].substring(0, music_list[index].length - 4);
         $("#music_name")[0].innerHTML = "暂停：" + msc_name;
         $("#msc_list").find("a").each(function(){$(this).css("color","");});

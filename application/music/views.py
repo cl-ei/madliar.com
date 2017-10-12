@@ -3,7 +3,7 @@ import os
 
 from madliar.template import render
 
-from etc.config import MUSIC_FOLDER
+from etc.config import MUSIC_FOLDER, CDN_URL
 
 
 def handler(request):
@@ -19,6 +19,7 @@ def handler(request):
     else:
         view_data = {"ref": False}
 
+    view_data["CDN_URL"] = CDN_URL
     return render(
         "template/music/index.html",
         context=view_data
