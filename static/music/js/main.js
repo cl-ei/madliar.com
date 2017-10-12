@@ -18,7 +18,7 @@ $(function(){
     var pauseImgPos = window.CDN_URL + "/static/music/player/pause.png",
         playImgPos = window.CDN_URL + "/static/music/player/play.png",
         musicFileFolder = window.CDN_URL + "/music_file/",
-        hxjjImgLocation = "url('"+ window.CDN_URL +  +"/static/music/friend_link/hxjj.jpg')";
+        hxjjImgLocation = "url('"+ window.CDN_URL + "/static/music/friend_link/hxjj.jpg')";
 
     function setCookie(cname, cvalue, exdays) {
         window.localStorage.setItem(cname, cvalue)
