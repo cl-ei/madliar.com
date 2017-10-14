@@ -18,9 +18,15 @@ def robots_response(request):
     return response
 
 
+def record(request):
+    # TODO: track...
+    return HttpResponse("")
+
+
 url = {
     r"^/robots?\.txt/?": robots_response,
     r"^/$": home_page,
+    r"^/record": record,
     r"^/blog": blog_url_map,
     r"^/music": music_url_map,
     r"^/notebook": notebook_url_map,

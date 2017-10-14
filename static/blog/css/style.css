@@ -39,6 +39,18 @@ body{
 h1, h2, h3, h4, h5, h6{
     font-weight:normal;
 }
+pre{
+    border: none;
+    border-radius: 0;
+    background-color: #eaeaea;
+}
+code{
+    padding: 2px 4px;
+    margin: 0 2px;
+    color: black;
+    background-color: #e3e3e3;
+    border-radius: 2px;
+}
 .center{
     text-align:center;
 }
@@ -582,6 +594,15 @@ canvas{
 .blog-timeline-content{
     color: #333;
 }
+.detail-content-pubtime{
+    border-top: 1px solid #ccc;
+    margin: -10px 0 10px 0;
+    padding-left: 0.4em;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    -o-text-overflow: ellipsis;
+}
 /*
  * media queries
  */
@@ -599,8 +620,11 @@ canvas{
         max-width: 1200px;
         padding: 30px;
     }
+    .detail-header{
+        margin-right: -20px;
+    }
     .detail-paper{
-        padding: 20px 30px 30px 30px;
+        padding: 20px 50px;
         background: white;
         color: #333;
         box-shadow: 4px 4px 8px 2px rgba(0,0,0,.08);
@@ -649,7 +673,7 @@ canvas{
     }
     .detail-article-title{
         font-size: 28px;
-        padding: 0px 0px 10px;
+        padding: 0 0 10px;
     }
     .detail-footer{
         border-top: 1px solid #ccc;
@@ -785,8 +809,7 @@ canvas{
         display: block;
     }
     .detail-content{
-        padding-left: 10px;
-        padding-right: 10px;
+        padding: 0;
     }
     .logo{
         margin-left: 15%;
@@ -924,6 +947,12 @@ canvas{
     }
     .logo{
         margin-left: 0;
+    }
+    .detail-header{
+        margin-right: 0;
+    }
+    .detail-paper{
+        padding: 20px 30px;
     }
 }
 @media (max-width:480px){
