@@ -99,7 +99,7 @@ def generate_cached_article_json(*args, **kwargs):
 
     detail = json.dumps(
         article_list,
-        ensure_ascii=False,
+        ensure_ascii=True,
         indent=4
     )
     id_list = json.dumps(sorted(article_list.keys())[::-1])

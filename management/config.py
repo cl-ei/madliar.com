@@ -6,14 +6,16 @@ this config file, not business logic config.
 """
 
 import os
+import platform
+
+DEBUG = False if "linux" in platform.system().lower() else True
 
 INSTALLED_MIDDLEWARE = (
     "application.middleware.recored_access_info",
     "application.middleware.force_return_410_when_not_found",
 )
 
-if os.name in ("nt", ):
-    DEBUG = True
+if DEBUG:
 
     ENABLE_SYS_LOG = True
     SYS_LOG_PATH = "./"
@@ -24,7 +26,6 @@ if os.name in ("nt", ):
     }
 
 else:
-    DEBUG = False
 
     ENABLE_SYS_LOG = True
     SYS_LOG_PATH = "/home/wwwroot/log"

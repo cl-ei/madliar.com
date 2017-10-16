@@ -10,6 +10,7 @@ import os
 if __name__ == "__main__":
     if os.name in ("nt", ):
         command = "madliar-manage.exe runserver localhost:8080"
+        os.system(command)
     else:
-        command = "madliar-manage runserver localhost:8080"
-    os.system(command)
+        from madliar.management import execute_from_command_line
+        execute_from_command_line("x runserver localhost:8080".split(" "))

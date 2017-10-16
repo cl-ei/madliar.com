@@ -4,6 +4,10 @@ website config.
 """
 
 import os
+import platform
+
+
+DEBUG = False if "liunx" in platform.system().lower() else True
 
 # ----------------------------- common config ------------------------------ #
 EMAIL_CONFIG = {
@@ -22,8 +26,8 @@ POST_ARTICLE_PATH = "template/_post/article"
 MUSIC_FOLDER = "./music"
 
 
-# ----------------------------- windows CONFIG ----------------------------- #
-if os.name in ("nt", ):
+# ----------------------------- debug CONFIG ----------------------------- #
+if DEBUG:
     CDN_URL = ""
 
     PROJECT_ROOT = "./"
