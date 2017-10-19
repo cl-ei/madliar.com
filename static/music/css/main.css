@@ -19,6 +19,7 @@ a:hover{
 
 body{	
 	display:none;
+    font-family: -apple-system, "Helvetica Neue", Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", "Microsoft Yahei", sans-serif;
 	background-color:white;
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
@@ -26,10 +27,6 @@ body{
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
-}
-
-p{
-	font-family:'Microsoft YaHei UI Light','Microsoft YaHei UI',sans-serif;
 }
 #friend_link_p{
 	margin-bottom: 0;
@@ -59,7 +56,6 @@ p{
     overflow: hidden;    
 }
 #player{
-	font-family:'Microsoft YaHei UI Light','Microsoft YaHei UI','Microsoft YaHei',sans-serif;
 	width: 350px;
 	height: 125px;
 	margin-top:0px;
@@ -112,7 +108,6 @@ p{
 #btn_border{
 	margin-left:50px;
 	width: 275px;
-	font-family:'Microsoft YaHei'; 
 	font-size:12px;
 	padding-top:30px;
 }
@@ -124,7 +119,6 @@ p{
 #second_layer{
 	display: none;
 	position: relative;
-	font-family:'Microsoft YaHei UI';
 	color: rgb(68, 68, 68);
 }
 #ctls{

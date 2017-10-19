@@ -28,7 +28,7 @@ a:hover{
 }
 body{
     background: black;
-    font-family: "Microsoft YaHei UI", "WenQuanYi Micro Hei", SimSun, sans-serif;
+    font-family: -apple-system, "Helvetica Neue", Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", "Microsoft Yahei", sans-serif;
     color:#fff;
     line-height:2;
     font-size: 14px;
