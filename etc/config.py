@@ -7,7 +7,7 @@ import os
 import platform
 
 
-DEBUG = False if "liunx" in platform.system().lower() else True
+DEBUG = False if "linux" in platform.system().lower() else True
 
 # ----------------------------- common config ------------------------------ #
 EMAIL_CONFIG = {
