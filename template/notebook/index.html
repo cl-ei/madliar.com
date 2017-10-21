@@ -102,38 +102,41 @@
         <input type="file" id="file-input" name="file"/>上传
     </form>
     <textarea id="default-file-content" class="hidden-area">
+
 ## 疯人云笔记
+---
+
 <img src="{{ CDN_URL }}/static/blog/img/blog/20161211/0.jpg" style="width: 100%">
 
 ### 开始使用
-　　此编辑器支持markdown语法，当然也兼容html，支持将笔记发送到你的邮箱。
+　　这是一个轻量级、支持分享、无广告的云笔记本。
 
-　　你可以像示例那样，在文章开始处用“---”划分一个隐藏的区域，在这个区域内你可以自由的为文章添加属性。这些属性有特殊的作用。下面是部分疯人编辑器支持的属性：
+　　你可以点击右上角的“注册”按钮，设置好你的邮箱和密码，即可登入系统。登入后，你会在页面左侧看到以你的邮箱命名的目录，这是你的根目录。
 
-* sendto:  将文章发送到这个邮箱（目前仅支持发送给自己）
-* title:  文章标题
-* category:  分类（保留）
-* tags/tag:  文章的标签（保留）
-* description:  文章的简短描述（保留）
+<img src="{{ CDN_URL }}/static/notebook/readme_img/preview.png" style="width:100%">
 
-　　在疯人编辑器编辑的文章，都可以保存在caoliang.net。但必须经过身份认证。注册过程很简单，你现在就可以点击【保存】按钮试一试。
+　　你可以在你的根目录夹下创建目录、新建文档。这个编辑器是支持markdown语法的，当然也兼容html语法。如果你不知道如何使用markdown语法撰写文档，百度上有诸多优秀的教程，你可以搜索并尝试一下。你可以为你撰写的文档创建一个分享的链接，下图就是这个这个文档分享后的效果。
 
-### 插入图片
-　　将图片拖到输入框，在资源备选框中点击要插入的图片，然后Ctrl V即可。下个版本中，图片的链接会在图片被拖入输入框时自动插入到光标处，只需一步。<img src="{{ CDN_URL }}/static/blog/img/project/20161225/upload_image.gif" style="width: 100%">
+<img src="{{ CDN_URL }}/static/notebook/readme_img/shareurl.jpg" style="width:100%">
+
+　　你也可以上传你自己的图片、音乐或其他二进制文件。所有的二进制文件均不支持在线预览，但系统可以为这些二进制文件创建一个链接（在左侧目录树结构的文件名上右击，然后点击“分享”），这样一来，你可以把它们的链接嵌入到你自己的文档中，让它绘声绘色，就像本示例一样。
+
+<img src="{{ CDN_URL }}/static/notebook/readme_img/share.png" style="width:100%">
+
+<img src="{{ CDN_URL }}/static/notebook/readme_img/shareprompt.png" style="width:100%">
 
 ### 安全和隐私
-　　你在caoliang.net上上传的所有内容，网站的维护者都尽可能的保护你的隐私，但你的资料依然有可能会其他人查阅，甚至大范围泄露到互联网，你的信息安全在这里并没有充足的保障。所以，请不要在这里上传敏感信息。
+　　你在madliar.com上保存的所有内容，网站的维护者都尽可能的保护你的隐私，但你的资料依然有可能会其他人查阅，甚至大范围泄露到互联网，你的信息安全在这里并没有充足的保障。所以，请不要在这里上传敏感信息。
 
 ### 最后
-　　已知的问题：
-* 由于阿里云的限制，发送的邮件将有很大几率被他们的服务器拦截。所以，“保存到邮箱”是一个碰运气的功能
-
-　　下一个版本：
-* 导出为pdf
-* 更全面markdown支持（语法高亮）
-* 拖入文件到输入框即编辑
 
 　　有任何的建议，欢迎发送邮件反馈。反馈邮箱：i@caoliang.net。
+
+---
+<p style="color: #ccc">MadNotebook Version 2.0 -
+<a href="https://github.com/cl-ei/madliar" style="color: #ccc;text-decoration: underline " target="_blank">MadLiar</a>
+ framework powered.
+</p>
 
     </textarea>
 </body>
