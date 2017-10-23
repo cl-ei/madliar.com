@@ -79,9 +79,7 @@ $(function(){
             data: {
                 "url": msg || "none"
             },
-            error:function(e){
-                console.log(e);
-            }
+            error: function(e){}
         });
     }
     function generateRadomInt(top){
