@@ -78,6 +78,7 @@ input{
     padding: 15px;
     opacity: 0;
     transition: top 0.3s linear 0s, opacity 0.1s;
+    z-index: -1;
 }
 .cl-prompt-close{
     position: absolute;
@@ -159,6 +160,23 @@ input{
     display: none;
     text-align: center;
     padding-top: 50%;
+}
+#uavaliable-mask a{
+    text-decoration: none;
+    color: #464646;
+    word-break: keep-all;
+    border-bottom: 1px solid;
+}
+#browser-prompt{
+    display: none;
+    background-color: #fbe57a;
+    margin: 0;
+    padding: 10px;
+}
+#browser-prompt a{
+    text-decoration: none;
+    border-bottom: 1px solid;
+    cursor: pointer;
 }
 #upload-file-form{
     display: none;

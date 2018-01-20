@@ -28,11 +28,12 @@ $.cl = {
     },
     windowSizeMonitor: function (){
         if(document.documentElement.clientWidth < 605){
-            $("#nav, #content").css({"display": "none"});
+            $("#browser-prompt, #nav, #content").css({"display": "none"});
             $("#uavaliable-mask").css({"display": "block"});
         }else{
             $("#nav, #content").css({"display": "block"});
-            $("#uavaliable-mask").css({"display": "none"});
+            $("#browser-prompt, #uavaliable-mask").css({"display": "none"});
+            $.cl.compatibilityChecking();
         }
     },
     popupedMessageBoxId: undefined,
@@ -655,7 +656,27 @@ $.cl = {
             "上传文件"
         );
     },
+    compatibilityChecking: function (){
+        if(localStorage.clearCompatibilityPrompt !== "c"){
+            var compatible = false;
+            var naString = navigator.userAgent || "";
+
+            var isChrome = naString.toLowerCase().indexOf("chrome");
+            compatible |= (isChrome > -1 && parseInt(naString.substr(isChrome + 7 /* the length of "chrome/" */)) > 50);
+
+            var isSafari = naString.toLowerCase().indexOf("safari");
+            compatible |= (isSafari > -1 && parseInt(naString.substr(isSafari + 7 /* the length of "safari/" */)) > 536);
+
+            if (!compatible){
+                $("#browser-prompt").css({display: "block"}).find("a").off("click").click(function(){
+                    $("#browser-prompt").css({display: "none"});
+                    localStorage.clearCompatibilityPrompt = "c";
+                });
+            }
+        }
+    },
     initPage: function (){
+        $.cl.compatibilityChecking();
         (window.contextData.loginInfo && window.contextData.loginInfo.email ? $.cl.renderLoginPage : $.cl.renderUnloginPage)();
         $("input[name=password]").on('keyup', function(e){if(e.key === "Enter"){$("#login-btn").trigger("click")}});
         if ($.cl.daemonToTransMdId){
