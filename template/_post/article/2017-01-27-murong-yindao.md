@@ -1,6 +1,6 @@
 -------------------------------
 title: 诗和远方
-categray: 观点
+category: 观点
 tags: 诗和远方
 ---------------------------------
 <img   src="/static/blog/img/blog/20170127/0.jpg" style="width: 100%">

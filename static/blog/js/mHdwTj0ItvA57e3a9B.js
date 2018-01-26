@@ -184,7 +184,7 @@ $(function(){
                     '<div class="detail-content">',
                         '<div class="detail-content-pubtime">',
                             '<i class="fa fa-calendar" aria-hidden="true"></i> ' + article.create_time,
-                            '　<i class="fa fa-tag" aria-hidden="true"></i> ' + article.tags.join("，"),
+                            (article.tags ? '　<i class="fa fa-tag" aria-hidden="true"></i> ' + article.tags.join("，") : ""),
                         '</div>',
                         marked(article.content),
                     '</div>',
@@ -307,6 +307,7 @@ $(function(){
             document.body.scrollTop = 0;
         });
         $("#list-view").click(function(){
+            $("#sel-guandian").trigger("click");
             record("list_view");
             $("section").children().fadeOut(0);
             $("#list-view-sub").fadeIn(400);

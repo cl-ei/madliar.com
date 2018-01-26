@@ -1,7 +1,7 @@
 -------------------------------
 title: 疯人编辑器
 sendto: calom@qq.com
-categray: 学习笔记
+category: 学习笔记
 tags: 编程，博客
 description: 一个注重内容、轻量级，永久免费的markdown编辑器
 ---------------------------------
