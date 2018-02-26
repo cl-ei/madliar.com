@@ -116,6 +116,25 @@ def login_required(func):
     return wraped_func
 
 
+@supported_action(action="change_password")
+@login_required
+def change_password(request):
+    email = request.COOKIES.get("email")
+    old_password = request.POST.get("old_password", "")
+    new_password = request.POST.get("new_password", "")
+
+    if not 5 < len(old_password) < 48 or not 5 < len(new_password) < 48:
+        return json_to_response({"err_code": 403, "err_msg": u"密码过长或过短。"})
+
+    result, err_msg = dao.change_password(email=email, old_password=old_password, new_password=new_password)
+    response = json_to_response({
+        "err_code": 0 if result else 403,
+        "err_msg": "" if result else err_msg,
+        "email": email,
+    })
+    return response
+
+
 def get_file_type(ex_name):
     if not ex_name or ex_name.lower() in (
         "txt", "text", "ini", "conf", "yml", "c", "cpp", "py", "json", "js"

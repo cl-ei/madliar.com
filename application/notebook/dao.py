@@ -80,6 +80,29 @@ def login(email, password):
     return False, u"操作失败。"
 
 
+def change_password(email, old_password, new_password):
+    if old_password == new_password:
+        return False, u"新旧密码相同！"
+
+    user_key = "USER_%s" % email
+    s = RedisKeyToJSON(user_key)
+    user_info = s.read()
+
+    existed_password = user_info.get("password")
+    if old_password != existed_password:
+        return False, u"密码错误。"
+
+    user_info.update({
+        "password": new_password,
+        "token": randstr(64),  # new_token
+        "expire_time": int(time.time()) + 3600*24*30,
+    })
+    if s.write(user_info):
+        return True, ""
+
+    return False, u"操作失败。"
+
+
 def regist(email, password):
     if not check_regist_limit(email):
         return False, u"系统繁忙，请稍后再试。"

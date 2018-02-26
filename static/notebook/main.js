@@ -150,6 +150,54 @@ $.cl = {
         };
         $.cl.sendRequest({action: "logout"}, afterLogOut);
     },
+    showChangePasswordDialog: function () {
+        var onConfirmBtnClicked = function (){
+            $("#input-modal").modal("hide");
+            var oldPassword = $("input[name=old-passwd]").val(),
+                newPassword = $("input[name=new-passwd]").val(),
+                newPassword2 = $("input[name=confirm-new-passwd]").val();
+
+            /* check old password */
+            if (oldPassword.length > 32 || oldPassword.length < 5){
+                $.cl.popupMessage("修改失败：请正确输入密码！");
+                return false;
+            }
+            if (newPassword.length > 32 || newPassword.length < 5){
+                $.cl.popupMessage("修改失败：新密码长度超出范围，请确保6~32个字符之间！");
+                return false;
+            }
+            if (newPassword !== newPassword2){
+                $.cl.popupMessage("修改失败：新密码输入不一致！");
+                return false;
+            }
+            if (oldPassword === newPassword){
+                $.cl.popupMessage("修改失败：新密码与旧密码相同！");
+                return false;
+            }
+
+            var onChangePasswordResponsed = function (data){
+                if(data.err_code === 0){
+                    $.cl.popupMessage("修改成功！请重新登录！", null, 3);
+                    $.cl.renderUnloginPage();
+                }else{
+                    $.cl.popupMessage("修改失败：" + (data.err_msg || "未知原因。"));
+                }
+            };
+            $.cl.sendRequest(
+                {action: "change_password", old_password: oldPassword, new_password: newPassword},
+                onChangePasswordResponsed
+            )
+        };
+        $("#input-modal-confirm-btn").off("click").click(onConfirmBtnClicked);
+        $("#input-modal-title").html("更改密码");
+        $("#input-modal-body").html([
+            '<label>旧的密码: <input class="redinput" name="old-passwd" type="password"/></label><br/>',
+            '<label style="margin-top: 15px">新的密码: <input class="redinput" name="new-passwd" type="password"/></label>',
+            '<label>再次确认: <input class="redinput" name="confirm-new-passwd" type="password"/></label>'
+        ].join(""));
+        $("input[name=confirm-new-passwd]").keyup(function(e){if(e.keyCode === 13)$("#input-modal-confirm-btn").trigger("click");});
+        $("#input-modal").modal("show");
+    },
     regist: function (){
         var email = $("input[name=email]").val(),
             password = $("input[name=password]").val();
@@ -507,11 +555,16 @@ $.cl = {
     renderLoginPage: function (){
         $.cl.releasePageResource();
         var navHtml = [
-            '<span class="user-name">欢迎回来，' + window.contextData.loginInfo.email + '</span>',
+            '<span>欢迎回来，',
+                '<a href="javascript:void(0)" id="change-passwd">',
+                    '<i class="fa fa-group" aria-hidden="true"></i> ' + window.contextData.loginInfo.email,
+                '</a>',
+            '</span>',
             '<a href="javascript:void(0)" id="logout" ><i class="fa fa-sign-in" aria-hidden="true"></i> 注销</a>'
         ].join("");
         $(".right-nav").html(navHtml);
         $("#logout").off("click").click($.cl.logout);
+        $("#change-passwd").off("click").click($.cl.showChangePasswordDialog);
 
         var leftNavHtml = [
             '<a href="javascript:void(0)" id="save-btn"><i class="fa fa-save" aria-hidden="true"></i> 保存</a>'
