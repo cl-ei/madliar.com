@@ -11,7 +11,7 @@ import platform
 DEBUG = False if "linux" in platform.system().lower() else True
 
 INSTALLED_MIDDLEWARE = (
-    "application.middleware.recored_access_info",
+    # "application.middleware.recored_access_info",
     "application.middleware.force_return_410_when_not_found",
 )
 
