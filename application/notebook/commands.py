@@ -2,6 +2,7 @@ import os
 import pickle
 import redis
 from madliar.management import reg_command
+from etc.config import REDIS_CONFIG
 
 
 @reg_command(name="clear_share_k")
@@ -9,7 +10,7 @@ def clear_share_k(*args, **kwargs):
     """
     Clear invalid sharing keys.
     """
-    s = redis.Redis(db=8)
+    s = redis.Redis(**REDIS_CONFIG)
     print "\n" + "-" * 60
     skey_to_path_prefix = "memcache_SKEY_TO_PATH_*"
     path_to_skey_prefix = "memcache_PATH_TO_SKEY_*"

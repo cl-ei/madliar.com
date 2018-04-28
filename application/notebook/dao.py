@@ -4,10 +4,11 @@ import json
 import time
 from lib.randomlib import randstr
 from lib import memcache
+from etc.config import REDIS_CONFIG
 
 
 class RedisKeyToJSON(object):
-    def __init__(self, key, host='localhost', port=6379, db=8):
+    def __init__(self, key, host='localhost', port=6379, db=8, **kw):
         self.__db = redis.Redis(host=host, port=port, db=db)
         self.__key = 'nb_%s' % key
 
@@ -45,7 +46,7 @@ class RedisKeyToJSON(object):
 
 
 def check_regist_limit(email):
-    s = redis.Redis(host='localhost', port=6379, db=8)
+    s = redis.Redis(**REDIS_CONFIG)
     now_time_str = time.strftime("%Y-%m-%d", time.localtime())
     login_key = "REG_%s" % now_time_str
 
