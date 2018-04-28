@@ -10,10 +10,6 @@ from importlib import import_module
 from etc.config import REDIS_CONFIG
 from etc.log4 import logging
 
-
-_redis_host = REDIS_CONFIG.get("host", "localhost")
-_redis_port = REDIS_CONFIG.get("host", 6379)
-_redis_db = REDIS_CONFIG.get("db", 8)
 _channel = "async_processor"
 
 connection = None
@@ -25,7 +21,7 @@ def get_md5(string):
 
 class RedisMessageQueue(object):
     def __init__(self):
-        self.__conn = redis.Redis(host=_redis_host, port=_redis_port, db=_redis_db)
+        self.__conn = redis.Redis(**REDIS_CONFIG)
         self.channel = _channel
 
     def publish(self, msg):

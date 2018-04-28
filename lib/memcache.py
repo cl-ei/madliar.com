@@ -15,9 +15,6 @@ import redis
 from etc.config import REDIS_CONFIG
 
 __all__ = ()
-__host = REDIS_CONFIG.get("host", "localhost")
-__port = REDIS_CONFIG.get("port", 6379)
-__db = REDIS_CONFIG.get("db", 8)
 connection = None
 __namespace = "memcache"
 
@@ -25,7 +22,7 @@ __namespace = "memcache"
 def set(key, value, timeout):
     global connection
     if connection is None:
-        connection = redis.Redis(host=__host, port=__port, db=__db)
+        connection = redis.Redis(**REDIS_CONFIG)
 
     key = "%s_%s" % (__namespace, key)
     value = pickle.dumps(value)
@@ -39,7 +36,7 @@ def set(key, value, timeout):
 def get(key):
     global connection
     if connection is None:
-        connection = redis.Redis(host=__host, port=__port, db=__db)
+        connection = redis.Redis(**REDIS_CONFIG)
     key = "%s_%s" % (__namespace, key)
     value = connection.get(key)
     return pickle.loads(value) if isinstance(value, (str, unicode)) else None
@@ -48,7 +45,7 @@ def get(key):
 def delete(key):
     global connection
     if connection is None:
-        connection = redis.Redis(host=__host, port=__port, db=__db)
+        connection = redis.Redis(**REDIS_CONFIG)
 
     key = "%s_%s" % (__namespace, key)
     return connection.delete(key)
