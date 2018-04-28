@@ -8,8 +8,8 @@ from etc.config import REDIS_CONFIG
 
 
 class RedisKeyToJSON(object):
-    def __init__(self, key, host='localhost', port=6379, db=8, **kw):
-        self.__db = redis.Redis(host=host, port=port, db=db)
+    def __init__(self, key):
+        self.__db = redis.Redis(**REDIS_CONFIG)
         self.__key = 'nb_%s' % key
 
     def write(self, value, timeout=0):
