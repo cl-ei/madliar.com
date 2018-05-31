@@ -606,7 +606,14 @@ $.cl = {
 
         var content = $("#input-text-area").val();
         if (!content.trim(" \n\r\t")) return;
-        var onSaveResponsed = function (){$.cl.popupMessage("保存成功！", null, 3)};
+        var onSaveResponsed = function (data){
+            if (data.err_code !== 0){
+                var msg = "操作失败。详细信息：" + data.err_msg;
+                $.cl.popupMessage(msg);
+                return ;
+            }
+            $.cl.popupMessage("保存成功！", null, 3)
+        };
         if (localStorage.currentDocument){
             $.cl.clearMessage();
             $.cl.sendRequest({action: "save", node_id: localStorage.currentDocument, content: content}, onSaveResponsed);
