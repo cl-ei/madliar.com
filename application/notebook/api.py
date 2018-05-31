@@ -484,10 +484,10 @@ def save(request):
 
     # 检查content
     content = request.POST.get("content")
-    if len(content) > 40960:
+    if len(content) > 512000:
         return json_to_response({
             "err_code": 403,
-            "err_msg": "内容太长！请确保不超过40KB。"
+            "err_msg": "内容太长！请确保不超过500KB。"
         })
 
     base_path, file_name = os.path.split(full_path)
