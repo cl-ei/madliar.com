@@ -541,10 +541,10 @@ def openfile(request):
             "err_code": 403,
             "err_msg": "内容不存在。"
         })
-    if os.path.getsize(full_path) > 40960:
+    if os.path.getsize(full_path) > 512000:
         return json_to_response({
             "err_code": 403,
-            "err_msg": "内容太长，不支持预览。请确保不超过40KB。"
+            "err_msg": "内容太长，不支持预览。请确保不超过500KB。"
         })
 
     try:
