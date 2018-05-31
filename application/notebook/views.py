@@ -63,3 +63,10 @@ def s(request, key):
         "CDN_URL": CDN_URL
     }
     return render("template/notebook/share.html", context=context_data)
+
+
+def ppy(request):
+    file_path = "/home/wwwroot/notebook/i@caoliang.net/papaya/api.json"
+    with open(file_path, "rb") as f:
+        content = f.read()
+    return HttpResponse(content=content, content_type="application/json")
