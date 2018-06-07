@@ -1,5 +1,6 @@
 import os
 import json
+import datetime
 from etc.config import LOG_PATH
 from madliar.http.response import HttpResponse
 
@@ -42,11 +43,26 @@ def record(request):
             decoration = msg.get("decoration")
             dl = msg.get("dl")
             raw_msg = msg.get("msg")
+            if not user or not raw_msg:
+                continue
+
             log_contents.append(
                 "[%s][%-5s][%s %s] %s -> %s\n" % (datetime_str, ul, decoration, dl, user, raw_msg)
             )
         file_name = os.path.join(LOG_PATH, "chat_%s.log" % room_id)
         content = "".join(log_contents).strip("\n")
+        with open(file_name, "ab+") as f:
+            print >> f, content.encode("utf-8", errors="replace")
+        return HttpResponse(content)
+    elif action == "prize_log":
+        datetime_str = str(datetime.datetime.now())[:-3]
+        count = request.POST.get("count")
+        provider = request.POST.get("provider")
+        prize_type = request.POST.get("type")
+        title = request.POST.get("title")
+
+        file_name = os.path.join(LOG_PATH, "prize_accept.log")
+        content = "[%s][%s][%s][%s][%s]" % (datetime_str, count, provider, prize_type, title)
         with open(file_name, "ab+") as f:
             print >> f, content.encode("utf-8", errors="replace")
         return HttpResponse(content)
