@@ -29,7 +29,7 @@ def record(request):
         room_id = request.POST.get("room_id")
         try:
             raw_msg_list = request.POST.get("msg_list")
-            logging.info("msg_list: [%s]" % msg_list)
+            logging.info("msg_list: [%s]" % raw_msg_list)
             msg_list = json.loads(raw_msg_list)
         except Exception as e:
             return HttpResponse("ERROR: %s" % e)
