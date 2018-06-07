@@ -3,6 +3,8 @@ import json
 from etc.config import LOG_PATH
 from madliar.http.response import HttpResponse
 
+from madliar.config.log4 import logging
+
 from application.blog.urls import url as blog_url_map
 from application.blog.views import home_page
 from application.music.urls import url as music_url_map
@@ -27,6 +29,7 @@ def record(request):
         room_id = request.POST.get("room_id")
         try:
             msg_list = json.loads(request.POST.get("msg_list"))
+            logging.info("msg_list: [%s]" % msg_list)
         except Exception as e:
             return HttpResponse("ERROR: %s" % e)
 
