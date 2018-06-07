@@ -51,20 +51,25 @@ def record(request):
             )
         file_name = os.path.join(LOG_PATH, "chat_%s.log" % room_id)
         content = "".join(log_contents).strip("\n")
+        if not isinstance(content, unicode):
+            content = content.decode("utf-8", errors="replace")
         with open(file_name, "ab") as f:
             print >> f, content.encode("utf-8", errors="replace")
         return HttpResponse(content)
     elif action == "prize_log":
+        try:
+            count = int(request.POST.get("count"))
+        except Exception:
+            return HttpResponse("Error count")
         datetime_str = str(datetime.datetime.now())[:-3]
-        count = request.POST.get("count")
         provider = request.POST.get("provider")
-        logging.info("provider type: %s" % type(provider))
-
         prize_type = request.POST.get("type")
         title = request.POST.get("title")
 
         file_name = os.path.join(LOG_PATH, "prize_accept.log")
         content = "[%s][%s][%s][%s][%s]" % (datetime_str, count, provider, prize_type, title)
+        if not isinstance(content, unicode):
+            content = content.decode("utf-8", errors="replace")
         with open(file_name, "ab") as f:
             print >> f, content.encode("utf-8", errors="replace")
         return HttpResponse(content)
