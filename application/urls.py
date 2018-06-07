@@ -46,7 +46,7 @@ def record(request):
                 "[%s][%-5s][%s %s] %s -> %s\n" % (datetime_str, ul, decoration, dl, user, raw_msg)
             )
         file_name = os.path.join(LOG_PATH, "chat_%s.log" % room_id)
-        content = "".join(log_contents)
+        content = "".join(log_contents).strip("\n")
         with open(file_name, "ab+") as f:
             print >> f, content.encode("utf-8", errors="replace")
         return HttpResponse(content)
