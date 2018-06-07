@@ -68,7 +68,7 @@ def record(request):
         p_url = request.POST.get("url")
 
         file_name = os.path.join(LOG_PATH, "prize_accept.log")
-        content = "[%s][%s][%s][%s][%s][%s]" % (datetime_str, count, provider, prize_type, title, p_url)
+        content = "[%s][%s][%s][%s][%s][%s]" % (datetime_str, count, prize_type, provider, p_url, title)
         if not isinstance(content, unicode):
             content = content.decode("utf-8", errors="replace")
         with open(file_name, "ab") as f:
