@@ -58,6 +58,8 @@ def record(request):
         datetime_str = str(datetime.datetime.now())[:-3]
         count = request.POST.get("count")
         provider = request.POST.get("provider")
+        logging.info("provider type: %s" % type(provider))
+
         prize_type = request.POST.get("type")
         title = request.POST.get("title")
 
