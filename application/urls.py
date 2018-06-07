@@ -47,8 +47,8 @@ def record(request):
             )
         file_name = os.path.join(LOG_PATH, "chat_%s.log" % room_id)
         content = "".join(log_contents)
-        with open(file_name, "a+") as f:
-            print >> f, content
+        with open(file_name, "ab+") as f:
+            print >> f, content.encode("utf-8", errors="replace")
         return HttpResponse(content)
     return HttpResponse("")
 
