@@ -51,7 +51,7 @@ def record(request):
             )
         file_name = os.path.join(LOG_PATH, "chat_%s.log" % room_id)
         content = "".join(log_contents).strip("\n")
-        with open(file_name, "ab+") as f:
+        with open(file_name, "ab") as f:
             print >> f, content.encode("utf-8", errors="replace")
         return HttpResponse(content)
     elif action == "prize_log":
@@ -63,7 +63,7 @@ def record(request):
 
         file_name = os.path.join(LOG_PATH, "prize_accept.log")
         content = "[%s][%s][%s][%s][%s]" % (datetime_str, count, provider, prize_type, title)
-        with open(file_name, "ab+") as f:
+        with open(file_name, "ab") as f:
             print >> f, content.encode("utf-8", errors="replace")
         return HttpResponse(content)
     return HttpResponse("")
