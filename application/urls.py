@@ -1,4 +1,5 @@
 import os
+import json
 from etc.config import LOG_PATH
 from madliar.http.response import HttpResponse
 
@@ -23,13 +24,25 @@ def robots_response(request):
 def record(request):
     action = request.POST.get("action", "")
     if action == "chat_log":
-        p = {}
-        for k in ("room_id", "datetime_str", "user", "ul", "decoration", "dl", "msg"):
-            p[k] = request.POST.get(k)
-        file_name = os.path.join(LOG_PATH, "chat_%s.log" % p["room_id"])
-        content = "[%s][%-5s][%s %s] %s -> %s" % (
-            p["datetime_str"], p["ul"], p["decoration"], p["dl"], p["user"], p["msg"]
-        )
+        room_id = request.POST.get("room_id")
+        try:
+            msg_list = json.loads(request.POST.get("msg_list"))
+        except Exception as e:
+            return HttpResponse("ERROR: %s" % e)
+
+        log_contents = []
+        for msg in msg_list:
+            datetime_str = msg.get("datetime_str")
+            user = msg.get("user")
+            ul = msg.get("ul")
+            decoration = msg.get("decoration")
+            dl = msg.get("dl")
+            raw_msg = msg.get("msg")
+            log_contents.append(
+                "[%s][%-5s][%s %s] %s -> %s\n" % (datetime_str, ul, decoration, dl, user, raw_msg)
+            )
+        file_name = os.path.join(LOG_PATH, "chat_%s.log" % room_id)
+        content = "".join(log_contents)
         with open(file_name, "a+") as f:
             print >> f, content
         return HttpResponse(content)
