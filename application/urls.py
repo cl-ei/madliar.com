@@ -28,8 +28,9 @@ def record(request):
     if action == "chat_log":
         room_id = request.POST.get("room_id")
         try:
-            msg_list = json.loads(request.POST.get("msg_list"))
+            raw_msg_list = request.POST.get("msg_list")
             logging.info("msg_list: [%s]" % msg_list)
+            msg_list = json.loads(raw_msg_list)
         except Exception as e:
             return HttpResponse("ERROR: %s" % e)
 
