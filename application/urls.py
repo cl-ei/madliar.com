@@ -49,6 +49,9 @@ def record(request):
             log_contents.append(
                 "[%s][%-5s][%s %s] %s -> %s\n" % (datetime_str, ul, decoration, dl, user, raw_msg)
             )
+        if not log_contents:
+            return HttpResponse("")
+
         file_name = os.path.join(LOG_PATH, "chat_%s.log" % room_id)
         content = "".join(log_contents).strip("\n")
         if not isinstance(content, unicode):
