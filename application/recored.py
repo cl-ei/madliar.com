@@ -1,9 +1,10 @@
 import os
 import json
 import datetime
-from etc.config import LOG_PATH
-from madliar.config.log4 import logging
 from madliar.http.response import HttpResponse
+
+from etc.config import LOG_PATH
+from etc.log4 import logging
 
 
 class supported_action(object):
@@ -44,7 +45,6 @@ def add_chat_log(request):
     room_id = request.POST.get("room_id")
     try:
         raw_msg_list = request.POST.get("msg_list")
-        logging.info("msg_list: [%s]" % raw_msg_list)
         msg_list = json.loads(raw_msg_list)
     except Exception as e:
         return HttpResponse("ERROR: %s" % e)

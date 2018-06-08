@@ -84,40 +84,36 @@ ip_pattern = re.compile(r"((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|
 def recored_access_info(get_response):
     def warp_get_response(request, *args, **kwargs):
         request_ip = request.META.get("HTTP_X_FORWARDED_FOR") or request.META.get("REMOTE_ADDR")
-        localhost_ip = ("127.0.0.1", "127.0.0.0", "0.0.0.0")
-        if not ip_pattern.match(request_ip) or request_ip in localhost_ip:
-            request_ip = None
-        else:
-            start_proc_time = time.time()
+        if not ip_pattern.match(request_ip) or request_ip in ("127.0.0.1", "127.0.0.0", "0.0.0.0"):
+            return get_response(request, *args, **kwargs)
 
-            if get_cached_ip_info(request_ip) is None:
-                # Cannot get ip info, start a async task to proc it.
-                block_bad_request.async_exec(request_ip)
+        start_proc_time = time.time()
 
-            request_ip = "%15s" % request_ip
-            user_agent = request.META.get("HTTP_USER_AGENT", "unkown")
-            path_info = request.META.get("PATH_INFO", "unkown")
-            query_string = request.META.get("QUERY_STRING")
-            if query_string:
-                path_info = "%s?%s" % (path_info, query_string)
+        # if get_cached_ip_info(request_ip) is None:
+        #    # Cannot get ip info, start a async task to proc it.
+        #    block_bad_request.async_exec(request_ip)
+
+        user_agent = request.META.get("HTTP_USER_AGENT", "unkown")
+        path_info = request.META.get("PATH_INFO", "unkown")
+        query_string = request.META.get("QUERY_STRING")
+        if query_string:
+            path_info = "%s?%s" % (path_info, query_string)
 
         response = get_response(request, *args, **kwargs)
 
-        if request_ip:
-            process_time = time.time() - start_proc_time
-            now_time = datetime.datetime.now().isoformat()[11:23]
-            status = response.status_code
-
-            access_info = (
-                "[ %s ][ %s ][ %.3f ][ %s ][ %s ][ %s ]"
-                % (now_time, status, process_time, request_ip, path_info, user_agent)
-            )
-            access_log_file = os.path.join(
-                ACCESS_LOG_PATH,
-                "%s.log" % datetime.datetime.now().isoformat()[:10]
-            )
-            with open(access_log_file, "a+") as f:
-                print >> f, access_info
-
+        process_time = time.time() - start_proc_time
+        now_time = datetime.datetime.now().isoformat()[11:23]
+        status = response.status_code
+        access_info = (
+            "[ %s ][ %s ][ %.3f ][ %15s ][ %s ][ %s ]"
+            % (now_time, status, process_time, request_ip, path_info, user_agent)
+        )
+        access_log_file = os.path.join(
+            ACCESS_LOG_PATH,
+            "%s.log" % str(datetime.datetime.now().date())
+        )
+        with open(access_log_file, "a+") as f:
+            print >> f, access_info
         return response
+
     return warp_get_response
