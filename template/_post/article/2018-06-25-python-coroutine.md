@@ -1,3 +1,10 @@
+---
+title: Python生成器与协程
+category: 学习笔记
+tags: 编程， Python
+---
+<!--more-->
+
 ### 生成器与协程
 　　当一个函数中包含yield关键字时，调用这个函数就会返回一个生成器。将这个生成器传入next()函数，就会获取一次yield产生的值，直到生成器结束，抛出StopIteration异常。例如下面就是一个生成器：
 
