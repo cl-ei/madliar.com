@@ -66,3 +66,8 @@ def coroutine(func):
 　　用作的协程的生成器return了一个值，则会抛一个StopIteration的异常给调用者，而这个异常的value属性就是return的值。
 
 ### yield from
+　　yield from功能强大，在生成器 gen 中使用 yield from subgen() 时，subgen 会获得控制权，把产出的值传给gen 的调用方，即调用方可以直接控制 subgen。与此同时，gen 会阻塞，等待 subgen 终止。
+
+　　所以yield from 的主要功能是打开双向通道，把最外层的调用方与最内层的子生成器连接起来， 这样二者可以直接发送和产出值，还可以直接传入异常，而不用在位于中间的协程中添加大量处理异常的样板代码。
+
+
