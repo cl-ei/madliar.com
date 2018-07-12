@@ -19,6 +19,16 @@ def robots_response(request):
     return response
 
 
+def timeout_response(request):
+    try:
+        wait_time = int(request.GET.get("time_out"))
+    except Exception:
+        wait_time = 65
+    import time
+    time.sleep(wait_time)
+    return HttpResponse(content="OK", content_type="text/plain")
+
+
 url = {
     r"^/robots?\.txt/?": robots_response,
     r"^/$": home_page,
@@ -26,4 +36,5 @@ url = {
     r"^/blog": blog_url_map,
     r"^/music": music_url_map,
     r"^/notebook": notebook_url_map,
+    r"^/timeout": timeout_response,
 }
