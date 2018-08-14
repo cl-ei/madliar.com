@@ -88,11 +88,11 @@ $(function(){
             var c = sl[i];
             var song = c[0];
             if (song.length >= 12){
-                song = song.substr(0, 12) + "...";
+                song = song.substr(0, 10) + "...";
             }
             var user = c[1];
             if (user.length >= 8){
-                user = user.substr(0, 8) + "...";
+                user = user.substr(0, 7) + "...";
             }
 
             dynamic += "<tr>" + "<td>" + i + "</td>" +
