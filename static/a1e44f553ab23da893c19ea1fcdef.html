@@ -1,3 +1,4 @@
+
 <html>
 <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
@@ -5,16 +6,146 @@
     <meta name="HandheldFriendly" content="True" />
     <meta name="MobileOptimized" content="360" />
     <style>
+        body{
+            margin: 0;padding: 20px;width: 500px;
+        }
+        .table1 table {
+            width:100%;
+            margin:15px 0
+        }
+        .table1 th {
+            background-color:#93DAFF;
+            color:#000000
+        }
+        .table1 td:nth-child(1), th:nth-child(1) {
+            width: 2em;
+        }
+        .table1 td:nth-child(2), th:nth-child(2) {
+            width: 300px;
+        }
+        .table1 td:nth-child(3), th:nth-child(3) {
+            width: 150px;
+        }
+        .table1 td:nth-child(4), th:nth-child(4) {
+            width: 100px;
+        }
 
+        .table1, .table1 th,.table1 td
+        {
+            font-size:0.95em;
+            text-align:left;
+            padding:4px;
+            border:1px solid #dddddd;
+            border-collapse:collapse;
+            word-break: break-all;
+            white-space: nowrap;
+            height: 30px;
+        }
+        #inner-warning-box{
+            color: #ff009c;
+        }
+        #main-box{
+            border:1px solid #ccc;
+        }
     </style>
 </head>
 <body>
-
+<div id="main-box">
+    <table class="table1" id="songlist-box">
+        <tr>
+            <th>#</th>
+            <th>歌名</th>
+            <th>用户</th>
+            <th>操作</th>
+        </tr>
+    </table>
+</div>
 <script src="//src.madliar.com/static/js/reconnectwebsocket.min.js"></script>
 <script src="//src.madliar.com/static/js/jquery.min.js"></script>
 <script src="//src.madliar.com/static/js/bootstrap.min.js"></script>
 <script>
+var basicString = '<th>#</th><th>歌名</th><th>用户</th><th>操作</th></tr><tr><td>*</td><td id="inner-warning-box">';
+var basicString2 = '</td><td>系统</td><td><a href="javascript:;" data-act="__del__"></a></td>';
 
+$(function(){
+    window.globalMessage = "";
+    window.globalMessageRemainTime = 0;
+
+    function renderSonglist(sl){
+        sl = sl || [];
+        console.log(sl);
+
+        var dynamic = "";
+        for (var i = 0; i < sl.length; i++){
+            var c = sl[i];
+            var song = c[0];
+            if (song.length >= 12){
+                song = song.substr(0, 12) + "...";
+            }
+            var user = c[1];
+            if (user.length >= 8){
+                user = user.substr(0, 8) + "...";
+            }
+
+            dynamic += "<tr>" + "<td>" + i + "</td>" +
+                "<td>" + song + "</td>" +
+                "<td>" + user + "</td>" +
+                '<td><a class="del-button" href="javascript:;" data-song="' + c[2] + '">删除</a></td>' + "</tr>";
+        }
+
+        var warningHtml = window.globalMessage ? (basicString + window.globalMessage + basicString2) : "<th>#</th><th>歌名</th><th>用户</th><th>操作</th>";
+        $("#songlist-box").html("<tr>" + warningHtml + "</tr>" + dynamic);
+        $(".del-button").off("click").click(function(){
+            var song = $(this).data("song");
+            console.log(song);
+            ws.send("delsong" + song)
+        });
+        if(window.globalMessage){
+            var s = window.globalMessage;
+            setTimeout(function(){
+                if(window.globalMessage == s){
+                    window.globalMessage = "";
+                    window.globalMessageRemainTime = 0;
+                    ws.send("songlist");
+                }
+            }, 7000);
+        }
+    }
+
+    var t1 = 0;
+    var socketStatus = false;
+    var ws = new ReconnectingWebSocket("wss://www.madliar.com/wss");
+    ws.onopen = function (evnt) {
+        socketStatus = true;
+        clearInterval(t1);
+        t1 = setInterval(function(){ws.send("heartbeat")}, 10000);
+        console.log("Websocket connected! t1: ", t1);
+        ws.send("songlist");
+    };
+    ws.onmessage = function (evnt) {
+        var msg = evnt.data;
+        try{
+            d = JSON.parse(msg)
+        }catch(e){
+            console.log("e: ", e)
+            return;
+        }
+        if(d.action == "songlist"){
+            renderSonglist(d.data);
+        }else if(d.action == "OK"){
+            return;
+        }else{
+            window.globalMessage = d.data;
+            ws.send("songlist");
+        }
+    };
+    ws.onerror = function (evnt) {
+        socketStatus=false;
+    };
+    ws.onclose = function (evnt) {
+        socketStatus=false;
+    };
+})
 </script>
 </body>
 </html>
