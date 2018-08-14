@@ -94,6 +94,8 @@ def generate_cached_article_json(*args, **kwargs):
 
     article_list = {}
     for file_name in file_list:
+        if not file_name.lower().endswith("md"):
+            continue
         parser = ArticleParser(file_name=file_name, file_path=article_path)
         article_list[parser.id] = parser.article_info
 
