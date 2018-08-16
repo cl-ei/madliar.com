@@ -46,12 +46,7 @@ logger.addHandler(fh)
 logging = logger
 
 
-REDIS_CONFIG = {
-    "host": "39.108.219.53",
-    "port": 19941,
-    "password": "redispassword",
-    "db": 2
-}
+REDIS_CONFIG = {}
 REDIS_SONGLIST_KEY = "L"
 ODER_SONG_INTERVAR = 180
 
