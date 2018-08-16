@@ -1,0 +1,264 @@
+
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>小坏蛋</title>
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="MobileOptimized" content="360" />
+    <style id="dynamic-style">
+        @-webkit-keyframes move{0%{top:0;}100%{top:-150px;}}
+    </style>
+    <style>
+        @font-face {
+            font-family: aaxiaonangua;
+            src:url('https://src.madliar.com/static/fonts/aaxiaonangua.ttf'); /* IE9 */
+        }
+        html{
+            color: #444;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+            text-rendering: optimizelegibility;
+            -webkit-font-smoothing: antialiased;
+            font-family: PingFang SC, Lantinghei SC, Microsoft Yahei, Hiragino Sans GB, Microsoft Sans Serif, WenQuanYi Micro Hei, sans;
+        }
+        body{
+            margin: 0;padding: 20px;min-width: 700px;
+        }
+        .table1 table {
+            width:100%;
+            margin:15px 0
+        }
+        .table1 th {
+            background-color:#93DAFF;
+            color:#000000
+        }
+        .table1 td:nth-child(1), th:nth-child(1) {
+            width: 2em;
+        }
+        .table1 td:nth-child(2), th:nth-child(2) {
+            width: 300px;
+        }
+        .table1 td:nth-child(3), th:nth-child(3) {
+            width: 150px;
+        }
+        .table1 td:nth-child(4), th:nth-child(4) {
+            width: 100px;
+        }
+
+        .table1, .table1 th,.table1 td
+        {
+            font-size:0.95em;
+            text-align:left;
+            padding:4px;
+            border:1px solid #dddddd;
+            border-collapse:collapse;
+            word-break: break-all;
+            white-space: nowrap;
+            height: 30px;
+        }
+        #inner-warning-box{
+            color: #ff009c;
+        }
+        #main-box{
+            overflow-y: scroll;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+        #wrap{
+            height: 90px;
+            max-width: 700px;
+            border: 1px solid #fff;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 20px;
+            background: #ccc;
+        }
+        #list{
+            transform: translateZ(0);
+            position:absolute;
+            left:0;
+            top:0;
+            margin:0;
+            padding:0;
+            -webkit-animation:3s move infinite linear;
+            width:100%;
+            color: rgb(183, 183, 221);
+            text-shadow: #fff -2px 0px 0px, #fff 0px -2px 0px, #fff 2px 0px 0px, #fff 0px 2px 0px, #fff -1px -1px 0px, #fff 1px 1px 0px, #fff 1px -1px 0px, #fff -1px 1px 0px;
+            font-size: 24px;
+            font-weight: 600;
+            font-family: aaxiaonangua;
+        }
+        #list li{
+            list-style: none;
+            text-align: center;
+        }
+    </style>
+    <style id="dynamic-line-height"></style>
+    <style id="dynamic-main-box-height"></style>
+
+</head>
+<body>
+<div id="wrap">
+	<ul id="list"></ul>
+</div>
+<div id="main-box">
+    <table class="table1" id="songlist-box">
+        <tr>
+            <th>#</th>
+            <th>歌名</th>
+            <th>用户</th>
+            <th>操作</th>
+        </tr>
+        <tr>
+            <td>*</td>
+            <td id="inner-warning-box"></td>
+            <td>系统</td>
+            <td></td>
+        </tr>
+    </table>
+</div>
+<script src="//src.madliar.com/static/js/reconnectwebsocket.min.js"></script>
+<script src="//src.madliar.com/static/js/jquery.min.js"></script>
+<script src="//src.madliar.com/static/js/bootstrap.min.js"></script>
+<script>
+
+$(function(){
+    function setScrollAnimationProperty(pos){
+        document.getElementById("dynamic-style").innerHTML = [
+            '@-webkit-keyframes move{0%{transform: translateY(0);}100%{transform: translateY(-' + pos + 'px);}}\n',
+            '@keyframes move{0%{transform: translateY(0);}100%{transform: translateY(-' + pos + 'px);}}\n',
+        ].join("");
+    }
+    var cssParam = window.location.search.substring(1).split("&");
+    window.line_height = 0;
+    window.base_speed = 0.6;
+    var box_height = 60;
+    window.BoxHeight = box_height;
+    for(var i = 0; i < cssParam.length; i++){
+        var p = cssParam[i].split("=");
+        if(p[0] == "line_height"){
+            window.line_height = parseInt(p[1]);
+            document.getElementById("dynamic-line-height").innerHTML = [
+                '.li-item{height:' + p[1] + 'px}',
+            ].join("");
+        }else if (p[0] == "box_height"){
+            box_height = parseInt(p[1]);
+            $("#wrap").css({"height": p[1] + "px"});
+        }else if (p[0] == "base_speed"){
+            window.base_speed = parseFloat(p[1]);
+        }
+    }
+    window.scrollStartingRowNumbers = Math.floor(box_height/window.line_height);
+    console.log("window.scrollStartingRowNumbers: ", window.scrollStartingRowNumbers);
+
+    function setOpeartionBoxSize(){
+        window.operationListHeight = window.innerHeight - 60 - box_height - 25;
+        window.operationListHeight = window.operationListHeight > 0 ? window.operationListHeight : 0;
+        document.getElementById("dynamic-main-box-height").innerHTML = [
+            '#main-box{height: ' + window.operationListHeight + 'px};'
+        ].join("");
+    }
+    setOpeartionBoxSize();
+    window.onresize = setOpeartionBoxSize;
+
+    function getStringInnerLength(str){
+        return str.replace(/[\u0391-\uFFE5]/g,"aa").length;
+    };
+
+    window.globalMessage = "";
+    function renderScrollSonglist(sl){
+        var scrollInnerHtml = "";
+        for (var i = 0; i < sl.length; i++){
+            scrollInnerHtml += '<li class="li-item"><a>' + sl[i][0] + "</a><br></li>";
+        }
+        scrollInnerHtml += '<li class="li-item"><a></a><br></li>';
+        if (sl.length <= window.scrollStartingRowNumbers){
+            $("#list").css({"-webkit-animation": "0s move infinite linear"}).html(scrollInnerHtml);
+        }else{
+            scrollInnerHtml += scrollInnerHtml;
+            setScrollAnimationProperty(window.line_height*(sl.length + 1));
+            var s = window.base_speed * sl.length;
+            console.log("s: ", s);
+            $("#list").css({"-webkit-animation": String(s) + "s move infinite linear"}).html(scrollInnerHtml);
+        }
+
+    }
+    function renderSonglist(sl){
+        sl = sl || [];
+        var songlistInnerHtml = [
+            '<tr><th>#</th><th>歌名</th><th>用户</th><th>操作</th></tr>',
+            '<tr><td>*</td><td id="inner-warning-box">' + window.globalMessage + '</td><td>系统</td><td></td></tr>'
+        ].join("");
+        for (var i = 0; i < sl.length; i++){
+            var c = sl[i];
+            var song = c[0];
+            if (getStringInnerLength(song) >= 24){
+                song = song.substr(0, 12) + "...";
+            }
+            var user = c[1];
+            if (getStringInnerLength(user) >= 16){
+                user = user.substr(0, 7) + "...";
+            }
+
+            songlistInnerHtml += "<tr>" + "<td>" + i + "</td>" +
+                "<td>" + song + "</td>" +
+                "<td>" + user + "</td>" +
+                '<td><a class="del-button" href="javascript:;" data-song="' + c[2] + '">删除</a></td>' + "</tr>";
+        }
+
+        $("#songlist-box").html(songlistInnerHtml);
+        $(".del-button").off("click").click(function(){
+            var song = $(this).data("song");
+            console.log(song);
+            ws.send("delsong" + song)
+        });
+
+        <!--if(window.globalMessage){-->
+            <!--var s = window.globalMessage;-->
+            <!--setTimeout(function(){-->
+                <!--if(window.globalMessage == s){-->
+                    <!--window.globalMessage = "";-->
+                    <!--ws.send("songlist");-->
+                <!--}-->
+            <!--}, 7000);-->
+        <!--}-->
+        renderScrollSonglist(sl);
+    }
+
+    var t1 = 0;
+    var socketStatus = false;
+    var ws = new ReconnectingWebSocket("wss://www.madliar.com/wss");
+    ws.onopen = function (evnt) {
+        socketStatus = true;
+        clearInterval(t1);
+        t1 = setInterval(function(){ws.send("heartbeat")}, 10000);
+        console.log("Websocket connected! t1: ", t1);
+        ws.send("songlist");
+    };
+    ws.onmessage = function (evnt) {
+        var msg = evnt.data;
+        try{
+            d = JSON.parse(msg)
+        }catch(e){
+            console.log("e: ", e)
+            return;
+        }
+        if(d.action == "songlist"){
+            renderSonglist(d.data);
+        }else if(d.action == "OK"){
+            return;
+        }else{
+            window.globalMessage = d.data;
+            ws.send("songlist");
+        }
+    };
+    ws.onerror = function (evnt) {
+        socketStatus=false;
+    };
+    ws.onclose = function (evnt) {
+        socketStatus=false;
+    };
+})
+</script>
+</body>
+</html>
