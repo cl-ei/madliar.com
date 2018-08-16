@@ -152,7 +152,7 @@ $(function(){
     console.log("window.scrollStartingRowNumbers: ", window.scrollStartingRowNumbers);
 
     function setOpeartionBoxSize(){
-        window.operationListHeight = window.innerHeight - 60 - box_height - 25;
+        window.operationListHeight = window.innerHeight - 60 - box_height - 45;
         window.operationListHeight = window.operationListHeight > 0 ? window.operationListHeight : 0;
         document.getElementById("dynamic-main-box-height").innerHTML = [
             '#main-box{height: ' + window.operationListHeight + 'px};'
