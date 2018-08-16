@@ -268,9 +268,9 @@ if __name__ == "__main__":
     websocket.enableTrace(True)
     ws = websocket.WebSocketApp(
         url=monitor_url,
+        on_open=on_open,
         on_message=on_message,
         on_error=on_error,
         on_close=on_close
     )
-    ws.on_open = on_open
     ws.run_forever()
