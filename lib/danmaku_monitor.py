@@ -183,34 +183,6 @@ def parse_danmaku(msg):
         logging.info(msg)
 
 
-def on_message(ws_obj, message):
-    while message:
-        length = (message[0] << 24) + (message[1] << 16) + (message[2] << 8) + message[3]
-        current_msg = message[:length]
-        message = message[length:]
-        if len(current_msg) > 16 and current_msg[16] != 0:
-            try:
-                msg = current_msg[16:].decode("utf-8", errors="ignore")
-                msg = json.loads(msg)
-                parse_danmaku(msg)
-            except Exception as e:
-                print("e: %s, m: %s" % (e, current_msg))
-
-
-def on_error(ws_obj, error):
-    print(error)
-    raise RuntimeError("WS Error!")
-
-
-def on_close(ws_obj):
-    raise RuntimeError("WS Closed!")
-
-
-def on_open(ws_obj):
-    print("ws opened: %s" % ws_obj)
-    send_join_room(ws_obj)
-
-
 def send_heart_beat(ws_obj):
     hb = generate_packet(CONST_HEART_BEAT)
     while True:
@@ -262,6 +234,34 @@ def generate_packet(action, payload=""):
     buff[15] = 1
 
     return buff + payload
+
+
+def on_open(ws_obj):
+    print("ws opened: %s" % ws_obj)
+    send_join_room(ws_obj)
+
+
+def on_message(ws_obj, message):
+    while message:
+        length = (message[0] << 24) + (message[1] << 16) + (message[2] << 8) + message[3]
+        current_msg = message[:length]
+        message = message[length:]
+        if len(current_msg) > 16 and current_msg[16] != 0:
+            try:
+                msg = current_msg[16:].decode("utf-8", errors="ignore")
+                msg = json.loads(msg)
+                parse_danmaku(msg)
+            except Exception as e:
+                print("e: %s, m: %s" % (e, current_msg))
+
+
+def on_error(ws_obj, error):
+    print(error)
+    raise RuntimeError("WS Error!")
+
+
+def on_close(ws_obj):
+    raise RuntimeError("WS Closed!")
 
 
 if __name__ == "__main__":
